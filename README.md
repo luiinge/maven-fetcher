@@ -1,18 +1,19 @@
-# Maven Fetcher
+Maven Fetcher
+================================================================================
 
-This project intention is to offer an easy way to retrieve Maven artifacts from remote repositories outside a regular
-Maven life-cycle operation. This feature may be necessary, for example, if you are building a tool that handles plugins
-that are provided as Maven artifacts, and you need to download and including them in your classpath dynamically.
+This project intention is to offer an easy way to retrieve Maven artifacts from remote repositories
+outside a regular Maven life-cycle operation. This feature may be necessary, for example, if you are
+building a tool that handles plugins that are provided as Maven artifacts, and you need to download
+ and including them in your classpath dynamically.
 
-There is already a library solving this situation: [Aether]. However, its API is proven to be a bit overwhelming
-for casual clients. The *Maven Fetcher* library is **wrapper** around it exposing a simpler API that should be enough for
-basic usage, as well as adding the capability of configure the fetching process externally using property files.
+There is already a library solving this situation: [Aether][1]. However, its API is proven to be a
+bit overwhelming for casual clients. The *Maven Fetcher* library is **wrapper** around it exposing
+a simpler API that should be enough for basic usage, as well as adding the capability of configure
+the fetching process externally using property files.
 
 
-## Prerequisites
-- Java 8 or newer
-
-## Usage
+Usage
+-----------------------------------------------------------------------------------------
 
 ### Example
 A typical use of this library would be a three-step process:
@@ -106,11 +107,13 @@ The accepted properties are the following:
 
 
 
-## License
+License
+-----------------------------------------------------------------------------------------
+
 ```
     MIT License
 
-    Copyright (c) 22020 Luis Iñesta Gelabert
+    Copyright (c) 2020 Luis Iñesta Gelabert
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -158,11 +161,23 @@ as follows:
 Any other part with no explicit license declared is considered to be under the
 MIT License.
 
-## Contributing
-Currently the project is closed to external contributions but this may change in the future.
-
-## Authors
-- Luis Iñesta Gelabert  |  :email: <linesta@iti.es> | :email: <luiinge@gmail.com>
 
 
-[Aether]: https://projects.eclipse.org/projects/technology.aether
+Authors
+-----------------------------------------------------------------------------------------
+
+- Luis Iñesta Gelabert  |  luiinge@gmail.com
+
+
+Contributions
+-----------------------------------------------------------------------------------------
+If you want to contribute to this project, visit the
+[Github project](https://github.com/luiinge/maven-fetcher). You can open a new issue / feature
+request, or make a pull request to consider. If your contribution is worthing, you will be added
+as a contributor in this very page.
+
+
+
+
+
+[1]: <https://projects.eclipse.org/projects/technology.aether>

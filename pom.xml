@@ -2,24 +2,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>maven-java-starter</groupId>
-        <artifactId>maven-java-starter</artifactId>
-        <version>java11-1.0</version>
+        <artifactId>maven-java11-starter</artifactId>
+        <version>1.0.0</version>
     </parent>
 
-    <!-- coordinates -->
     <groupId>maven-fetcher</groupId>
     <artifactId>maven-fetcher</artifactId>
     <version>1.0.0</version>
 
-    <!-- additional information -->
     <name>Maven Fetcher</name>
     <description>Java utility to fetch Maven dependencies</description>
-    <inceptionYear>2019</inceptionYear>
+    <inceptionYear>2020</inceptionYear>
+
+
+ <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://repository.jboss.org/licenses/mit.txt</url>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/luiinge/jext/maven-fetcher</url>
+    </issueManagement>
 
     <properties>
         <aether.version>1.0.2.v20150114</aether.version>

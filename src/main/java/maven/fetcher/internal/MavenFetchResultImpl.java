@@ -44,7 +44,9 @@ public class MavenFetchResultImpl implements MavenFetchResult {
     ) {
         Artifact artifact = node.getArtifact();
         return new FetchedArtifact(
-            artifact,
+            artifact.getGroupId(),
+            artifact.getArtifactId(),
+            artifact.getVersion(),
             repositoryPath.resolve(localRepositoryManager.getPathForLocalArtifact(artifact)),
             node.getChildren().stream()
                 .map(child -> collectArtifact(child, localRepositoryManager, repositoryPath))

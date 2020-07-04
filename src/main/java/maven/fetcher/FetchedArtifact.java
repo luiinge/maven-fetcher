@@ -7,9 +7,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.eclipse.aether.artifact.Artifact;
-
-
+/**
+ * This class contains data regarding a fetched artifact, such as its coordinates and
+ * physical path in the local repository.
+ *
+ */
 public class FetchedArtifact {
 
     private final String groupId;
@@ -19,40 +21,64 @@ public class FetchedArtifact {
     private final List<FetchedArtifact> dependencies;
 
 
-    public FetchedArtifact(Artifact artifact, Path path, List<FetchedArtifact> dependencies) {
-        this.groupId = artifact.getGroupId();
-        this.artifactId = artifact.getArtifactId();
-        this.version = artifact.getVersion();
+    public FetchedArtifact(
+        String groupId,
+        String artifactId,
+        String version,
+        Path path,
+        List<FetchedArtifact> dependencies
+    ) {
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.version = version;
         this.path = path;
         this.dependencies = dependencies;
     }
 
 
+    /**
+     * The group id
+     */
     public String groupId() {
         return groupId;
     }
 
 
+    /**
+     * The artifact id
+     */
     public String artifactId() {
         return artifactId;
     }
 
 
+    /**
+     * The version of the artifact
+     */
     public String version() {
         return version;
     }
 
 
+    /**
+     * Full coordinates text, in form of {@literal <groupId>:<artifactId>:<version>}
+     */
     public String coordinates() {
         return groupId + ":" + artifactId + ":" + version;
     }
 
 
+    /**
+     * The fetched artifacts that are direct dependencies of this artifact
+     */
     public Stream<FetchedArtifact> dependencies() {
         return dependencies.stream();
     }
 
 
+    /**
+     * The fetched artifacts that are direct or inherited dependencies of this artifact
+     */
     public Stream<FetchedArtifact> allDepedencies() {
         return Stream.concat(
             dependencies(),
@@ -61,6 +87,9 @@ public class FetchedArtifact {
     }
 
 
+    /**
+     * The path of the physical file in the local repository
+     */
     public Path path() {
         return path;
     }

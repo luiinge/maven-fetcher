@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -40,17 +39,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import maven.fetcher.internal.MavenDependencyFetcher;
-import maven.fetcher.internal.MavenFetcherConfig;
 import maven.fetcher.internal.MavenTransferLogger;
 
 
 
-
+/**
+ * This class allows to fetch Maven artifacts from one or several remote repositories
+ */
 public class MavenFetcher {
 
-    private final List<RemoteRepository> remoteRepositories = List.of(
+
+    private final List<RemoteRepository> remoteRepositories = new ArrayList<>(List.of(
         createRemoteRepository("maven-central",  "https://repo.maven.apache.org/maven2")
-    );
+    ));
 
     private RepositorySystem system;
     private LocalRepository localRepository;
@@ -60,12 +61,6 @@ public class MavenFetcher {
     private List<String> proxyExceptions;
     private Logger logger = LoggerFactory.getLogger(MavenFetcher.class);
 
-
-
-    public MavenFetcher config(Properties properties) throws MalformedURLException {
-        new MavenFetcherConfig(properties).config(this);
-        return this;
-    }
 
 
     /**
@@ -138,6 +133,15 @@ public class MavenFetcher {
     }
 
 
+    /**
+     * Add a remote repository with the given priority (being 0 the highest)
+     */
+    public MavenFetcher addRemoteRepository(String id, String url, int priority) {
+        this.remoteRepositories.add(priority,createRemoteRepository(id, url));
+        return this;
+    }
+
+
 
     /**
      * Retrieve the specified artifacts and their dependencies from the remote
@@ -153,7 +157,7 @@ public class MavenFetcher {
     }
 
 
-    private MavenFetchResult doFetchArtifacts(MavenFetchRequest request) throws MavenFetchException {
+    private MavenFetchResult doFetchArtifacts(MavenFetchRequest request) {
         try {
             if (remoteRepositories.isEmpty()) {
                 throw new IllegalArgumentException("Remote repositories not specified");
@@ -208,8 +212,8 @@ public class MavenFetcher {
         try {
             url = new URL(proxyURL);
         } catch (MalformedURLException e) {
-            // should never reach this point, URL was checked when setted
-            throw new RuntimeException(e);
+            // should never reach this point, URL was checked when set
+            throw new MavenFetchException(e);
         }
         int port = url.getPort() < 0 ? 8080 : url.getPort();
         Authentication authentication = null;
