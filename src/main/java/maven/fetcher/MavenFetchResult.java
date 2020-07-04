@@ -6,7 +6,9 @@ package maven.fetcher;
 
 import java.util.stream.Stream;
 
-
+/**
+ * This interface exposes the results of a fetch operation
+ */
 public interface MavenFetchResult {
 
     /** @return A new stream with the fetched artifacts requested */
