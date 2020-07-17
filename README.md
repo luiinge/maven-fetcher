@@ -53,8 +53,6 @@ Include the following within the `<dependencies>` section of your `pom.xml` file
 
 ### Configuration
 
-#### Configuration via API
-
 The API offers a set of methods to configure options fluently:
 
 - `logger(logger :Logger)`
@@ -81,28 +79,6 @@ The API offers a set of methods to configure options fluently:
 
   > Add a Maven remote repository from where retrieve artifacts
 
-#### Configuration via properties
-
-Another way to configure the fetcher is load either a `Properties` object or an external  `.properties` file:
-
-- `config(properties: Properties)`
-
-   >  Configure the fetcher using the properties from the passed object
-
-- `config(propertiesFile: Path)`
-
-   >  Configure the fetcher using the properties from the specified file (must be a plain `.properties` file)
-
-The accepted properties are the following:
-
-| Property             | Description                                        |
-| -------------------- | -------------------------------------------------- |
-| `remoteRepositories` | A list of remote repository URL separated with `;` |
-| `localRepository`    | The path of the Maven local repository folder      |
-| `proxy.url`          | A proxy URL, if required                           |
-| `proxy.username`     | The username for proxy credentials                 |
-| `proxy.password`     | The password for proxy credentials                 |
-| `proxy.exceptions`   | A list of proxy exceptions separated with `;`      |
 
 
 
