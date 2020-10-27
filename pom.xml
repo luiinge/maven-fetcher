@@ -42,7 +42,7 @@
         <plexus-component-annotations.version>2.1.0</plexus-component-annotations.version>
         <plexus-interpolation.version>1.26</plexus-interpolation.version>
         <guice.version>4.2.3</guice.version>
-        <guava.version>29.0-jre</guava.version>
+        <guava.version>30.0-jre</guava.version>
     </properties>
 
 
