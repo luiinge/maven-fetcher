@@ -49,8 +49,6 @@ Include the following within the `<dependencies>` section of your `pom.xml` file
 
 ### Configuration
 
-#### Configuration via API
-
 The API offers a set of methods to configure options fluently:
 
 - `logger(logger :Logger)`
