@@ -1,5 +1,5 @@
 /**
- * @author Luis Iñesta Gelabert - linesta@iti.es | luiinge@gmail.com
+ * @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
 package maven.fetcher.internal;
 
@@ -24,6 +24,10 @@ import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.MetadataRequest;
+import org.eclipse.aether.resolution.VersionRangeRequest;
+import org.eclipse.aether.resolution.VersionRequest;
+import org.eclipse.aether.resolution.VersionResolutionException;
 import org.eclipse.aether.transfer.ArtifactNotFoundException;
 import org.slf4j.Logger;
 
@@ -57,7 +61,7 @@ public class MavenDependencyFetcher implements DependencySelector {
         this.scopes = fetchRequest.scopes();
         this.retrieveOptionals = fetchRequest.isRetrievingOptionals();
         this.dependencies = fetchRequest.artifacts().stream()
-            .map(DefaultArtifact::new)
+            .map(this::artifactFromCoordinates)                        
             .map(artifact -> new Dependency(artifact, null))
             .collect(Collectors.toList());
         this.logger = logger;
@@ -65,7 +69,12 @@ public class MavenDependencyFetcher implements DependencySelector {
 
 
     public MavenFetchResult fetch() throws DependencyCollectionException {
-        logger.info("Searching in the following repositories: {}", remoteRepositories);
+        if (logger.isInfoEnabled()) {
+            logger.info("Using the following repositories:");
+            for (var remoteRepository : remoteRepositories) {
+                logger.info("- {repository} [{uri}]", remoteRepository.getId(), remoteRepository.getUrl());
+            }
+        }
         this.retrievedArtifacts = new HashSet<>();
         CollectRequest request = new CollectRequest(dependencies, null, remoteRepositories);
         CollectResult result = system.collectDependencies(session, request);
@@ -73,6 +82,29 @@ public class MavenDependencyFetcher implements DependencySelector {
         return new MavenFetchResultImpl(result, session);
     }
 
+
+    private DefaultArtifact artifactFromCoordinates (String coordinates) {
+        try {
+            return new DefaultArtifact(coordinates);
+        } catch (IllegalArgumentException e) {
+            // if version is not supplied, try to use the latest
+            var parts = coordinates.split(":");
+            if (parts.length == 2) {
+                try {
+                    var groupId = parts[0];
+                    var artifactId = parts[1];
+                    var versionRequest = new VersionRequest()
+                        .setArtifact(new DefaultArtifact(groupId, artifactId, "jar", "LATEST"))
+                        .setRepositories(this.remoteRepositories);                    
+                    var version = system.resolveVersion(session, versionRequest).getVersion();
+                    return new DefaultArtifact(groupId, artifactId, "jar", version);
+                } catch (VersionResolutionException ex) {
+                    throw new IllegalArgumentException("Cannot resolve artifact version: "+ex.getMessage(), ex);
+                }
+            }
+            throw e;
+        }
+    }
 
     private void retrieveDependency(DependencyNode node) {
         if (node.getArtifact() != null) {

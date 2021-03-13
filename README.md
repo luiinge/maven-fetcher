@@ -22,7 +22,7 @@ A typical use of this library would be a three-step process:
 1. Check the result and handle the fetched artifacts if necessary
 
 ```java
-  CompletableFuture<MavenFetchResult> result = new MavenFetcher()
+  var result = new MavenFetcher()
     .localRepositoryPath("/home/linesta/.m2/repository")
     .addRemoteRepository("nexus", "https://nexus:8081/repository/maven-releases")
     .fetchArtifacts( new MavenFetchRequest(
@@ -32,11 +32,7 @@ A typical use of this library would be a three-step process:
        .scopes("compile","provided")
        .retrievingOptionals()       .
     );
-    Stream<FetchedArtifact> fetchedArtifacts = result.get().allArtifacts();
 ```
-
-Notice that the method returns a `CompletableFuture` instead of the direct result. This way,
-you can launch a fetch without blocking necessarily your application.
 
 ### Dependency
 
@@ -44,7 +40,7 @@ you can launch a fetch without blocking necessarily your application.
 Include the following within the `<dependencies>` section of your `pom.xml` file:
 ```xml
 <dependency>
-    <groupId>maven-fetcher</groupId>
+    <groupId>io.github.luiinge</groupId>
     <artifactId>maven-fetcher</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -89,9 +85,6 @@ Another way to configure the fetcher is load either a `Properties` object or an 
 
    >  Configure the fetcher using the properties from the passed object
 
-- `config(propertiesFile: Path)`
-
-   >  Configure the fetcher using the properties from the specified file (must be a plain `.properties` file)
 
 The accepted properties are the following:
 
@@ -103,6 +96,40 @@ The accepted properties are the following:
 | `proxy.username`     | The username for proxy credentials                 |
 | `proxy.password`     | The password for proxy credentials                 |
 | `proxy.exceptions`   | A list of proxy exceptions separated with `;`      |
+
+
+Other considerations
+-----------------------------------------------------------------------------------------
+
+### Restricting access to remote repositories
+By default, the `MavenFetcher` object would check the Maven central repository at 
+[https://repo.maven.apache.org/maven2]. However, in some scenarios you may want to 
+restrict the access to remote repositories and use only a curated or private list.
+To achieve this, simply clear the remote repositories before adding your own.
+
+```java
+  var result = new MavenFetcher()
+    .localRepositoryPath("/home/linesta/.m2/repository")
+    .clearRemoteRepositories()
+    .addRemoteRepository("nexus", "https://nexus:8081/repository/maven-releases")
+    .fetchArtifacts( ... )
+```
+
+### Artifact versions
+
+The artifact request usually include the specific coordinates of the required artifacts 
+in form of `<groupId>:<artifactId>:<version>` . However, this library benefits from the 
+Maven version range mechanism, being `version` some of the following:
+| Range | Meaning |
+| ----- | ------- |
+| `1.0`       | specific version
+| `[1.5,)`    | any versioon greater or equal
+| `(,1.5]`    | any version less or equal
+| `[1.2,1.3]` | any version in the given interval 
+| none | latest version available
+
+Notice that, it the version is not included (coordinates in form `<groupId>:<artifactId>`),
+the latest version available in the remote repositories will be used.
 
 
 
@@ -133,6 +160,7 @@ License
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ```
+
 ### Additional license
 Some parts of this library are directly copied from the source code of several Maven packages.
 This has been necessary in order to make them compatible with Java Jigsaw module system, but no

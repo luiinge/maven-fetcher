@@ -5,15 +5,12 @@
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">
-            <PatternLayout pattern="[%t] [%level] %m%n"/>
+            <PatternLayout pattern="%m%n"/>
         </Console>
     </Appenders>
     <Loggers>
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>
-        <Logger name="iti.kukumo.logs" level="info"/>
-        <Logger name="iti.kukumo.core.backend.ExpressionMatcher" level="info"/>
-        <Logger name="iti.kukumo.core.backend.DefaultBackendFactory" level="info"/>
     </Loggers>
 </Configuration>

@@ -1,5 +1,5 @@
 /**
- * @author Luis Iñesta Gelabert - linesta@iti.es | luiinge@gmail.com
+ * @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
 package maven.fetcher;
 

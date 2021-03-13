@@ -19,6 +19,7 @@ open module maven.fetcher {
     requires javax.inject;
     requires com.google.guice;
     requires com.google.common;
+    requires slf4jansi;
 
 
 

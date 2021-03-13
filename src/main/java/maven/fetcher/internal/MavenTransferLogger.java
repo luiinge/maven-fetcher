@@ -1,5 +1,5 @@
 /**
- * @author Luis Iñesta Gelabert - linesta@iti.es | luiinge@gmail.com
+ * @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
 package maven.fetcher.internal;
 
@@ -12,10 +12,11 @@ import org.eclipse.aether.transfer.TransferListener;
 import org.slf4j.Logger;
 
 
+
 public class MavenTransferLogger implements TransferListener {
 
-    private final Logger logger;
 
+    private final Logger logger;
 
     public MavenTransferLogger(Logger logger) {
         Objects.requireNonNull(logger);
@@ -25,32 +26,33 @@ public class MavenTransferLogger implements TransferListener {
 
     @Override
     public void transferInitiated(TransferEvent event) throws TransferCancelledException {
+        //
+    }
+
+
+    @Override
+    public void transferStarted(TransferEvent event) throws TransferCancelledException {
         if (event.getResource().getResourceName().endsWith(".jar") && logger.isInfoEnabled()) {
-            logger.info(
-                "Downloading [{}] from {} ...",
-                resourceName(event),
-                event.getResource().getRepositoryUrl()
+            logger.debug(
+                "Transfering {artifact} [{}] from {uri}  ...", 
+                resourceName(event), 
+                resourceSize(event),
+                repository(event)                     
             );
         }
     }
 
 
     @Override
-    public void transferStarted(TransferEvent event) throws TransferCancelledException {
-        //
-    }
-
-
-    @Override
     public void transferProgressed(TransferEvent event) throws TransferCancelledException {
-        //
+        
     }
 
 
     @Override
     public void transferCorrupted(TransferEvent event) throws TransferCancelledException {
         if (event.getResource().getResourceName().endsWith(".jar") && logger.isErrorEnabled()) {
-            logger.error("Checksum validation failed for [{}]", resourceName(event));
+            logger.error("Checksum validation failed for [{artifact}]", resourceName(event));
         }
     }
 
@@ -58,7 +60,12 @@ public class MavenTransferLogger implements TransferListener {
     @Override
     public void transferSucceeded(TransferEvent event) {
         if (event.getResource().getResourceName().endsWith(".jar") && logger.isInfoEnabled()) {
-            logger.info("[{}] downloaded [{}]", resourceName(event), resourceSize(event));
+            logger.info(
+                "{artifact} [{}] downloaded from {uri} ", 
+                resourceName(event), 
+                resourceSize(event), 
+                repository(event)
+            );
         }
     }
 
@@ -67,7 +74,7 @@ public class MavenTransferLogger implements TransferListener {
     public void transferFailed(TransferEvent event) {
         if (event.getResource().getResourceName().endsWith(".jar") && logger.isErrorEnabled()) {
             logger.warn(
-                "Cannot download [{}] from {}",
+                "Cannot download {artifact} from {uri}",
                 resourceName(event),
                 event.getResource().getRepositoryUrl()
             );
@@ -77,13 +84,17 @@ public class MavenTransferLogger implements TransferListener {
 
     private String resourceName(TransferEvent event) {
         int index = event.getResource().getResourceName().lastIndexOf('/');
-        return event.getResource().getResourceName().substring(index < 0 ? 0 : index + 1);
+        return String.format("%-40s",event.getResource().getResourceName().substring(index < 0 ? 0 : index + 1));
     }
 
 
     private String resourceSize(TransferEvent event) {
         long size = event.getResource().getContentLength();
-        return size > 1000L ? size / 1000L + " Kb" : size + " bytes";
+        return String.format("%7s",size > 1000L ? size / 1000L + " Kb" : size + " bytes");
     }
 
+
+    private String repository(TransferEvent event) {
+        return event.getResource().getRepositoryUrl();
+    }
 }

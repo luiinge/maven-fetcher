@@ -1,5 +1,5 @@
 /**
- * @author Luis Iñesta Gelabert - linesta@iti.es | luiinge@gmail.com
+ * @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
 package maven.fetcher;
 
@@ -19,6 +19,7 @@ public interface MavenFetchResult {
 
     /** @return <tt>true</tt> if any error has ocurred during the fetching */
     boolean hasErrors();
+
 
 
 }

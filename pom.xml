@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>maven-java-starter</groupId>
-        <artifactId>maven-java11-starter</artifactId>
-        <version>1.0.0</version>
+        <groupId>io.github.luiinge</groupId>
+        <artifactId>maven-java-starter</artifactId>
+        <version>11.2.0</version>
     </parent>
 
-    <groupId>maven-fetcher</groupId>
+    <groupId>io.github.luiinge</groupId>
     <artifactId>maven-fetcher</artifactId>
     <version>1.0.0</version>
 
@@ -19,17 +19,30 @@
     <inceptionYear>2020</inceptionYear>
 
 
- <licenses>
-        <license>
-            <name>MIT License</name>
-            <url>http://repository.jboss.org/licenses/mit.txt</url>
-        </license>
-    </licenses>
+    <url>https://github.com/luiinge/maven-fetcher</url>
+
+    <organization>
+        <name>luiinge</name>
+        <url>https://github.com/luiinge</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <name>Luis Iñesta Gelabert</name>
+            <email>luiinge@gmail.com</email>
+        </developer>
+    </developers>
 
     <issueManagement>
         <system>Github</system>
-        <url>https://github.com/luiinge/jext/maven-fetcher</url>
+        <url>https://github.com/luiinge/maven-fetcher/issues</url>
     </issueManagement>
+
+    <scm>
+        <connection>scm:git:git://github.com/luiinge/maven-fetcher.git</connection>
+        <developerConnection>scm:git:ssh://github.com:luiinge/maven-fetcher.git</developerConnection>
+        <url>https://github.com/luiinge/maven-fetcher/tree/master</url>
+    </scm>
 
     <properties>
         <aether.version>1.1.0</aether.version>
@@ -43,6 +56,7 @@
         <plexus-interpolation.version>1.26</plexus-interpolation.version>
         <guice.version>4.2.3</guice.version>
         <guava.version>29.0-jre</guava.version>
+        <slf4j-ansi.version>1.0.0</slf4j-ansi.version>
     </properties>
 
 
@@ -113,8 +127,12 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.luiinge</groupId>
+            <artifactId>slf4j-ansi</artifactId>
+            <version>${slf4j-ansi.version}</version>
+        </dependency>
     </dependencies>
-
 
 
     <build>
@@ -133,17 +151,5 @@
         </plugins>
     </build>
 
-
-    <!-- temporary, use github as maven repository -->
-    <repositories>
-        <repository>
-            <id>github</id>
-            <url>https://luiinge.github.io/maven-repo</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
 
 </project>

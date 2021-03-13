@@ -1,5 +1,5 @@
 /**
- * @author Luis Iñesta Gelabert - linesta@iti.es | luiinge@gmail.com
+ * @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
 package maven.fetcher;
 
@@ -7,12 +7,7 @@ package maven.fetcher;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.maven.repository.MavenRepositorySystemUtils;
@@ -40,13 +35,21 @@ import org.slf4j.LoggerFactory;
 
 import maven.fetcher.internal.MavenDependencyFetcher;
 import maven.fetcher.internal.MavenTransferLogger;
+import slf4jansi.AnsiLogger;
 
 
 
 /**
- * This class allows to fetch Maven artifacts from one or several remote repositories
+ * This class allows to fetch Maven artifacts from one or several remote repositories.
+ * <p>
+ * <em>This class is mutable and not thread-safe.</em>
  */
 public class MavenFetcher {
+
+    {
+        AnsiLogger.addStyle("repository", "yellow,bold");
+        AnsiLogger.addStyle("artifact", "green,bold");
+    }
 
 
     private final List<RemoteRepository> remoteRepositories = new ArrayList<>(List.of(
@@ -59,7 +62,7 @@ public class MavenFetcher {
     private String proxyUsername;
     private String proxyPassword;
     private List<String> proxyExceptions;
-    private Logger logger = LoggerFactory.getLogger(MavenFetcher.class);
+    private Logger logger = AnsiLogger.of(LoggerFactory.getLogger(MavenFetcher.class));
 
 
 
@@ -67,7 +70,7 @@ public class MavenFetcher {
      * Set the logger for this object
      */
     public MavenFetcher logger(Logger logger) {
-        this.logger = logger;
+        this.logger = AnsiLogger.of(logger);
         return this;
     }
 
@@ -125,6 +128,18 @@ public class MavenFetcher {
 
 
     /**
+     * Remove all remote repositories, including the default Maven central repository.
+     * <p>
+     * Use this method if you want to restrict artifact downloading to a set 
+     * of private repositories,
+     */
+    public MavenFetcher clearRemoteRepositories() {
+        this.remoteRepositories.clear();
+        return this;
+    }
+
+
+    /**
      * Add a remote repository
      */
     public MavenFetcher addRemoteRepository(String id, String url) {
@@ -145,19 +160,9 @@ public class MavenFetcher {
 
     /**
      * Retrieve the specified artifacts and their dependencies from the remote
-     * repositories. Since this operation could be time-consuming, this method returns a
-     * {@link CompletableFuture} immediately instead of blocking the execution.
-     *
-     * @param request The artifact fetching request
+     * repositories. 
      */
-    public CompletableFuture<MavenFetchResult> fetchArtifacts(MavenFetchRequest request) {
-        return new CompletableFuture<MavenFetchResult>().completeAsync(
-            ()->doFetchArtifacts(request)
-        );
-    }
-
-
-    private MavenFetchResult doFetchArtifacts(MavenFetchRequest request) {
+    public MavenFetchResult fetchArtifacts(MavenFetchRequest request) {
         try {
             if (remoteRepositories.isEmpty()) {
                 throw new IllegalArgumentException("Remote repositories not specified");
@@ -173,6 +178,7 @@ public class MavenFetcher {
             if (!result.hasErrors()) {
                 logger.warn("Some dependencies were not fetched!");
             }
+            logger.info("{} artifacts resolved.", result.allArtifacts().count());
             return result;
         } catch (DependencyCollectionException e) {
             throw new MavenFetchException(e);
