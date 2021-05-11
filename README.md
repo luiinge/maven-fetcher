@@ -7,8 +7,7 @@ building a tool that handles plugins that are provided as Maven artifacts, and y
  and including them in your classpath dynamically.
 
 There is already a library solving this situation: [Aether][1], which was later migrated to 
-[Apache Maven Artifact Resolver][2] according this [official announcment](https://projects.eclipse.
-org/projects/technology.aether/reviews/termination-review). 
+[Apache Maven Artifact Resolver][2] according this [official announcment](https://projects.eclipse.org/projects/technology.aether/reviews/termination-review). 
 However, this API is arguably a bit overwhelming for casual clients. 
 The *Maven Fetcher* library is **wrapper** around `Apache Maven Artifact Resolver` exposing
 a simpler API that should be enough for basic usage, as well as adding the capability of configure
