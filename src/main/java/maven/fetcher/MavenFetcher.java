@@ -1,42 +1,30 @@
-/**
+/*
  * @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
 package maven.fetcher;
 
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.apache.maven.repository.MavenRepositorySystemUtils;
-import org.apache.maven.repository.internal.DefaultVersionResolver;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.RepositorySystem;
+import maven.fetcher.internal.*;
+import org.apache.maven.repository.internal.*;
+import org.eclipse.aether.*;
 import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
-import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.impl.*;
 import org.eclipse.aether.impl.DefaultServiceLocator.ErrorHandler;
-import org.eclipse.aether.impl.VersionResolver;
-import org.eclipse.aether.repository.Authentication;
-import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.*;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.ProxySelector;
-import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
-import org.eclipse.aether.util.repository.AuthenticationBuilder;
-import org.eclipse.aether.util.repository.DefaultProxySelector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import maven.fetcher.internal.MavenDependencyFetcher;
-import maven.fetcher.internal.MavenTransferLogger;
+import org.eclipse.aether.util.repository.*;
+import org.slf4j.*;
 import slf4jansi.AnsiLogger;
 
+import java.net.*;
+import java.nio.file.Path;
+import java.util.*;
 
 
 /**
@@ -46,7 +34,7 @@ import slf4jansi.AnsiLogger;
  */
 public class MavenFetcher {
 
-    {
+    static {
         AnsiLogger.addStyle("repository", "yellow,bold");
         AnsiLogger.addStyle("artifact", "green,bold");
     }
@@ -227,10 +215,10 @@ public class MavenFetcher {
             authentication = new AuthenticationBuilder().addUsername(proxyUsername)
                 .addPassword(proxyPassword).build();
         }
-        Proxy proxy = new Proxy(url.getProtocol(), url.getHost(), port, authentication);
+        var proxy = new Proxy(url.getProtocol(), url.getHost(), port, authentication);
         return Optional.of(
             new DefaultProxySelector()
-                .add(proxy, proxyExceptions == null ? "" : proxyExceptions.stream().collect(Collectors.joining("|")))
+                .add(proxy, proxyExceptions == null ? "" : String.join("|", proxyExceptions))
         );
     }
 
@@ -264,7 +252,7 @@ public class MavenFetcher {
     }
 
 
-    private static void checkNonNull(Collection<? extends Object> collection) {
+    private static void checkNonNull(Collection<?> collection) {
         Objects.requireNonNull(collection);
         for (Object object : collection) {
             Objects.requireNonNull(object);

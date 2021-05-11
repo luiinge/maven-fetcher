@@ -12,7 +12,7 @@
 
     <groupId>io.github.luiinge</groupId>
     <artifactId>maven-fetcher</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 
     <name>Maven Fetcher</name>
     <description>Java utility to fetch Maven dependencies</description>
@@ -45,66 +45,34 @@
     </scm>
 
     <properties>
-        <aether.version>1.1.0</aether.version>
-        <maven.aether.version>3.3.9</maven.aether.version>
-        <javax.inject.version>1</javax.inject.version>
-        <commons-lang3.version>3.10</commons-lang3.version>
+        <maven-resolver.version>1.6.3</maven-resolver.version>
+        <maven-model.version>3.8.1</maven-model.version>
+        <maven-aether-provider.version>3.3.9</maven-aether-provider.version>
         <commons-logging.version>1.2</commons-logging.version>
-        <plexus-utils.version>3.3.0</plexus-utils.version>
-        <plexus-classworlds.version>2.6.0</plexus-classworlds.version>
-        <plexus-component-annotations.version>2.1.0</plexus-component-annotations.version>
-        <plexus-interpolation.version>1.26</plexus-interpolation.version>
-        <guice.version>4.2.3</guice.version>
-        <guava.version>29.0-jre</guava.version>
         <slf4j-ansi.version>1.0.0</slf4j-ansi.version>
     </properties>
 
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-impl</artifactId>
+            <version>${maven-resolver.version}</version>
         </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>${commons-logging.version}</version>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-connector-basic</artifactId>
+            <version>${maven-resolver.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-            <version>${plexus-utils.version}</version>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-transport-file</artifactId>
+            <version>${maven-resolver.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-component-annotations</artifactId>
-            <version>${plexus-component-annotations.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-interpolation</artifactId>
-            <version>${plexus-interpolation.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-impl</artifactId>
-            <version>${aether.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-connector-basic</artifactId>
-            <version>${aether.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-transport-file</artifactId>
-            <version>${aether.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.aether</groupId>
-            <artifactId>aether-transport-http</artifactId>
-            <version>${aether.version}</version>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-transport-http</artifactId>
+            <version>${maven-resolver.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -113,24 +81,24 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>${javax.inject.version}</version>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+            <version>${maven-model.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>${guice.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-aether-provider</artifactId>
+            <version>${maven-aether-provider.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.luiinge</groupId>
             <artifactId>slf4j-ansi</artifactId>
             <version>${slf4j-ansi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons-logging.version}</version>
         </dependency>
     </dependencies>
 
@@ -140,6 +108,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <manifestEntries>

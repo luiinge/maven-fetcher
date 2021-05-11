@@ -6,11 +6,17 @@ outside a regular Maven life-cycle operation. This feature may be necessary, for
 building a tool that handles plugins that are provided as Maven artifacts, and you need to download
  and including them in your classpath dynamically.
 
-There is already a library solving this situation: [Aether][1]. However, its API is proven to be a
-bit overwhelming for casual clients. The *Maven Fetcher* library is **wrapper** around it exposing
+There is already a library solving this situation: [Aether][1], which was later migrated to 
+[Apache Maven Artifact Resolver][2] according this [official announcment](https://projects.eclipse.
+org/projects/technology.aether/reviews/termination-review). 
+However, this API is arguably a bit overwhelming for casual clients. 
+The *Maven Fetcher* library is **wrapper** around `Apache Maven Artifact Resolver` exposing
 a simpler API that should be enough for basic usage, as well as adding the capability of configure
-the fetching process externally using property files.
+the fetching process externally using properties.
 
+> **NOTE**  
+> Since version `1.1.0` the underlying implementation uses components of `Apache Maven Artifact 
+> Resolver` instead of `Aether`.
 
 Usage
 -----------------------------------------------------------------------------------------
@@ -42,7 +48,7 @@ Include the following within the `<dependencies>` section of your `pom.xml` file
 <dependency>
     <groupId>io.github.luiinge</groupId>
     <artifactId>maven-fetcher</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -159,35 +165,6 @@ License
     SOFTWARE.
 ```
 
-### Additional license
-Some parts of this library are directly copied from the source code of several Maven packages.
-This has been necessary in order to make them compatible with Java Jigsaw module system, but no
-alteration has been made. Each of these files are licensed independently under the Apache License
-as follows:
-
-```
-  Licensed to the Apache Software Foundation (ASF) under one
-  or more contributor license agreements.  See the NOTICE file
-  distributed with this work for additional information
-  regarding copyright ownership.  The ASF licenses this file
-  to you under the Apache License, Version 2.0 (the
-  "License"); you may not use this file except in compliance
-  with the License.  You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing,
-  software distributed under the License is distributed on an
-  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  KIND, either express or implied.  See the License for the
-  specific language governing permissions and limitations
-  under the License.
-
-```
-Any other part with no explicit license declared is considered to be under the
-MIT License.
-
-
 
 Authors
 -----------------------------------------------------------------------------------------
@@ -207,3 +184,4 @@ as a contributor in this very page.
 
 
 [1]: <https://projects.eclipse.org/projects/technology.aether>
+[2]: <https://maven.apache.org/resolver/>
