@@ -1,6 +1,20 @@
 Maven Fetcher
 ================================================================================
 
+![GitHub](https://img.shields.io/github/license/luiinge/maven-fetcher?style=plastic)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/luiinge/maven-fetcher/quality%20check/master?style=plastic)
+![Maven Central](https://img.shields.io/maven-central/v/io.github.luiinge/maven-fetcher?style=plastic)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=luiinge_maven-fetcher&metric=alert_status)](https://sonarcloud.io/dashboard?id=luiinge_maven-fetcher)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=luiinge_maven-fetcher&metric=ncloc)](https://sonarcloud.io/dashboard?id=luiinge_maven-fetcher)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=luiinge_maven-fetcher&metric=coverage)](https://sonarcloud.io/dashboard?id=luiinge_maven-fetcher)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=luiinge_maven-fetcher&metric=bugs)](https://sonarcloud.io/dashboard?id=luiinge_maven-fetcher)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=luiinge_maven-fetcher&metric=code_smells)](https://sonarcloud.io/dashboard?id=luiinge_maven-fetcher)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=luiinge_maven-fetcher&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=luiinge_maven-fetcher)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=luiinge_maven-fetcher&metric=sqale_index)](https://sonarcloud.io/dashboard?id=luiinge_maven-maven-fetcher)
+
+
+
 This project intention is to offer an easy way to retrieve Maven artifacts from remote repositories
 outside a regular Maven life-cycle operation. This feature may be necessary, for example, if you are
 building a tool that handles plugins that are provided as Maven artifacts, and you need to download
