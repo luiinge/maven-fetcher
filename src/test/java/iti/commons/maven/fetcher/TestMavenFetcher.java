@@ -101,9 +101,17 @@ public class TestMavenFetcher {
         Assertions.assertThat(result.allArtifacts())
             .anyMatch(artifact->artifact.coordinates().equals("junit:junit:4.12"))
             .anyMatch(artifact->artifact.path().getFileName().toString().equals("junit-4.12.jar"))
+            .anyMatch(artifact->artifact.toString().equals(junitArtifactToString()))
             .allMatch(artifact->artifact.path().toFile().exists())
         ;
     }
 
+
+    private String junitArtifactToString() {
+         return
+         "|- junit:junit:4.12  ["+localRepo+"/junit/junit/4.12/junit-4.12.jar]\n"+
+         "   |- org.hamcrest:hamcrest-core:1.3  ["+localRepo+"/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar]\n"
+        ;
+    }
 
 }

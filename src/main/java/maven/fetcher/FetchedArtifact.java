@@ -64,7 +64,7 @@ public class FetchedArtifact {
      * Full coordinates text, in form of {@literal <groupId>:<artifactId>:<version>}
      */
     public String coordinates() {
-        return groupId + ":" + artifactId + ":" + version;
+        return groupId() + ":" + artifactId() + ":" + version();
     }
 
 
@@ -103,7 +103,7 @@ public class FetchedArtifact {
 
     private StringBuilder toString(int level, StringBuilder string) {
         for (int i = 0; i < level; i++) {
-            string.append("  ");
+            string.append("   ");
         }
         string
             .append("|- ")
