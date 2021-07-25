@@ -11,9 +11,9 @@ import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.impl.*;
 import org.eclipse.aether.impl.DefaultServiceLocator.ErrorHandler;
-import org.eclipse.aether.repository.*;
 import org.eclipse.aether.repository.Proxy;
 import org.eclipse.aether.repository.ProxySelector;
+import org.eclipse.aether.repository.*;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
@@ -25,6 +25,8 @@ import slf4jansi.AnsiLogger;
 import java.net.*;
 import java.nio.file.Path;
 import java.util.*;
+
+import static maven.fetcher.MavenFetcherProperties.*;
 
 
 /**
@@ -144,6 +146,52 @@ public class MavenFetcher {
         return this;
     }
 
+
+    /**
+     * Configure the fetcher according a set of properties
+     * @see MavenFetcherProperties
+     */
+    public MavenFetcher config(Properties properties) {
+        if ("true".equalsIgnoreCase(properties.getProperty(USE_DEFAULT_REMOTE_REPOSITORY, "false"))) {
+            clearRemoteRepositories();
+        }
+        for (Object property : properties.keySet()) {
+            try {
+                var value = properties.getProperty(property.toString());
+                switch (property.toString()) {
+                    case REMOTE_REPOSITORIES:
+                        addRemoteRepositories(Arrays.asList(value.split(";")));
+                        break;
+                    case LOCAL_REPOSITORY:
+                        localRepositoryPath(value);
+                        break;
+                    case PROXY_USERNAME:
+                        this.proxyUsername = value;
+                        break;
+                    case PROXY_PASSWORD:
+                        this.proxyPassword = value;
+                        break;
+                    case PROXY_EXCEPTIONS:
+                        this.proxyExceptions = Arrays.asList(value.split(";"));
+                        break;
+                    case PROXY_URL:
+                        checkURL(value);
+                        this.proxyURL = value;
+                }
+            } catch (Exception e) {
+                throw new MavenFetchException("Invalid value for property '"+property+"' : "+e.getMessage(), e);
+            }
+        }
+        return this;
+    }
+
+
+    private void addRemoteRepositories(List<String> repositories) {
+        repositories.stream()
+            .map(it -> it.split("="))
+            .map(entry -> createRemoteRepository(entry[0],entry[1]))
+            .forEach(this.remoteRepositories::add);
+    }
 
 
     /**

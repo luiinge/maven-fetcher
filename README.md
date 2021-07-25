@@ -61,7 +61,7 @@ Include the following within the `<dependencies>` section of your `pom.xml` file
 <dependency>
     <groupId>io.github.luiinge</groupId>
     <artifactId>maven-fetcher</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
@@ -105,14 +105,15 @@ Another way to configure the fetcher is load either a `Properties` object or an 
 
 The accepted properties are the following:
 
-| Property             | Description                                        |
-| -------------------- | -------------------------------------------------- |
-| `remoteRepositories` | A list of remote repository URL separated with `;` |
-| `localRepository`    | The path of the Maven local repository folder      |
-| `proxy.url`          | A proxy URL, if required                           |
-| `proxy.username`     | The username for proxy credentials                 |
-| `proxy.password`     | The password for proxy credentials                 |
-| `proxy.exceptions`   | A list of proxy exceptions separated with `;`      |
+| Property                     | Description                                                                  |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| `useDefaultRemoteRepository` | Whether use the default Maven Central repository (`true` by default)         |
+| `remoteRepositories`         | A list of remote repositories in form of `=` and separated with `;`          |
+| `localRepository`            | The path of the Maven local repository folder                                |
+| `proxy.url`                  | A proxy URL, if required                                                     |
+| `proxy.username`             | The username for proxy credentials                                           |
+| `proxy.password`             | The password for proxy credentials                                           |
+| `proxy.exceptions`           | A list of proxy exceptions separated with `;`                                |
 
 
 Other considerations
@@ -137,15 +138,15 @@ To achieve this, simply clear the remote repositories before adding your own.
 The artifact request usually include the specific coordinates of the required artifacts 
 in form of `<groupId>:<artifactId>:<version>` . However, this library benefits from the 
 Maven version range mechanism, being `version` some of the following:
-| Range | Meaning |
-| ----- | ------- |
-| `1.0`       | specific version
-| `[1.5,)`    | any versioon greater or equal
-| `(,1.5]`    | any version less or equal
-| `[1.2,1.3]` | any version in the given interval 
-| none | latest version available
+| Range       | Meaning                           |
+| ----------- | --------------------------------- |
+| `1.0`       | specific version                  |
+| `[1.5,)`    | any version greater or equal      |
+| `(,1.5]`    | any version less or equal         |
+| `[1.2,1.3]` | any version in the given interval |
+| none        | latest version available          |
 
-Notice that, it the version is not included (coordinates in form `<groupId>:<artifactId>`),
+Notice that, if the version is not included (coordinates in form `<groupId>:<artifactId>`),
 the latest version available in the remote repositories will be used.
 
 
@@ -189,7 +190,7 @@ Contributions
 -----------------------------------------------------------------------------------------
 If you want to contribute to this project, visit the
 [Github project](https://github.com/luiinge/maven-fetcher). You can open a new issue / feature
-request, or make a pull request to consider. If your contribution is worthing, you will be added
+request, or make a pull request to consider. If your contribution is worthy, you will be added
 as a contributor in this very page.
 
 

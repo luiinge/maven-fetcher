@@ -1,3 +1,6 @@
+/*
+ * @author Luis Iñesta Gelabert -  luiinge@gmail.com
+ */
 package maven.fetcher;
 
 /**
@@ -12,4 +15,7 @@ public class MavenFetchException extends RuntimeException{
         super(e);
     }
 
+    public MavenFetchException(String message, Throwable e) {
+        super(message, e);
+    }
 }

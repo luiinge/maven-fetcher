@@ -1,32 +1,18 @@
-/**
- * @author Luis Iñesta Gelabert -  luiinge@gmail.com
+/*
+  @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
 package iti.commons.maven.fetcher;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.concurrent.TimeUnit;
-
+import maven.fetcher.*;
 import org.assertj.core.api.Assertions;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.*;
+import org.slf4j.*;
 
-import maven.fetcher.MavenFetchRequest;
-import maven.fetcher.MavenFetchResult;
-import maven.fetcher.MavenFetcher;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Properties;
 
 
 public class TestMavenFetcher {
@@ -55,10 +41,9 @@ public class TestMavenFetcher {
         });
     }
 
-
     
     @Test
-    public void fetchArtifactWithDependencies() throws Exception {        
+    public void fetchArtifactWithDependencies() {
         var result = new MavenFetcher()
             .localRepositoryPath(localRepo.toString())
             .clearRemoteRepositories()
@@ -72,7 +57,7 @@ public class TestMavenFetcher {
 
 
     @Test
-    public void fetchLastestVersionIfVersionNotSpecified() throws Exception {
+    public void fetchLatestVersionIfVersionNotSpecified() {
         var mockRepo = Path.of("src","test","resources","mock_maven_repo").toAbsolutePath().toUri().toString();
         var result = new MavenFetcher()
             .localRepositoryPath(localRepo.toString())
@@ -86,17 +71,39 @@ public class TestMavenFetcher {
     }
 
 
+    @Test
+    public void fetcherCanBeConfiguredViaProperties() {
+        Properties properties = new Properties();
+        properties.setProperty(MavenFetcherProperties.LOCAL_REPOSITORY, localRepo.toString());
+        properties.setProperty(MavenFetcherProperties.USE_DEFAULT_REMOTE_REPOSITORY,"false");
+        properties.setProperty(MavenFetcherProperties.REMOTE_REPOSITORIES,"mock="+mockRepo);
+        var result = new MavenFetcher()
+            .config(properties)
+            .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
+            .fetchArtifacts(
+                new MavenFetchRequest("junit:junit:4.12").scopes("compile")
+            );
+        assertJUnit4_12IsFetched(result);
+    }
 
-    void assertJUnit4_12IsFetched(MavenFetchResult result) throws Exception {
+
+    @Test
+    public void malformedPropertiesThrowError() {
+        Assertions.assertThatCode(() -> {
+            Properties properties = new Properties();
+            properties.setProperty(MavenFetcherProperties.REMOTE_REPOSITORIES,"mock:file://repository");
+            new MavenFetcher().config(properties);
+        }).hasMessage("Invalid value for property 'remoteRepositories' : Index 1 out of bounds for length 1");
+    }
+
+
+    void assertJUnit4_12IsFetched(MavenFetchResult result) {
         Assertions.assertThat(result.allArtifacts())
             .anyMatch(artifact->artifact.coordinates().equals("junit:junit:4.12"))
             .anyMatch(artifact->artifact.path().getFileName().toString().equals("junit-4.12.jar"))
             .allMatch(artifact->artifact.path().toFile().exists())
-            ;
- 
+        ;
     }
 
 
-
-    
 }

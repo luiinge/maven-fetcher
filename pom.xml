@@ -12,7 +12,7 @@
 
     <groupId>io.github.luiinge</groupId>
     <artifactId>maven-fetcher</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
 
     <name>Maven Fetcher</name>
     <description>Java utility to fetch Maven dependencies</description>

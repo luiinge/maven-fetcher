@@ -1,38 +1,22 @@
-/**
- * @author Luis Iñesta Gelabert -  luiinge@gmail.com
+/*
+  @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
 package maven.fetcher.internal;
 
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.collection.CollectRequest;
-import org.eclipse.aether.collection.CollectResult;
-import org.eclipse.aether.collection.DependencyCollectionContext;
-import org.eclipse.aether.collection.DependencyCollectionException;
-import org.eclipse.aether.collection.DependencySelector;
-import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.*;
+import org.eclipse.aether.artifact.*;
+import org.eclipse.aether.collection.*;
+import org.eclipse.aether.graph.*;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.ArtifactRequest;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
-import org.eclipse.aether.resolution.MetadataRequest;
-import org.eclipse.aether.resolution.VersionRangeRequest;
-import org.eclipse.aether.resolution.VersionRequest;
-import org.eclipse.aether.resolution.VersionResolutionException;
+import org.eclipse.aether.resolution.*;
 import org.eclipse.aether.transfer.ArtifactNotFoundException;
 import org.slf4j.Logger;
 
-import maven.fetcher.MavenFetchRequest;
-import maven.fetcher.MavenFetchResult;
+import maven.fetcher.*;
 
 
 public class MavenDependencyFetcher implements DependencySelector {

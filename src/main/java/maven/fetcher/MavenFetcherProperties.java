@@ -1,3 +1,6 @@
+/*
+ * @author Luis Iñesta Gelabert -  luiinge@gmail.com
+ */
 package maven.fetcher;
 
 public class MavenFetcherProperties {
@@ -7,7 +10,7 @@ public class MavenFetcherProperties {
     /** Set whether the default Maven central repository should be used (`true` by default) */
     public static final String USE_DEFAULT_REMOTE_REPOSITORY  = "useDefaultRemoteRepository";
 
-    /** A list of remote repository URL separated with `;` */
+    /** A list of remote repositories in form of <pre>&lt;id&gt;=&lt;url&gt;</pre> and separated with `;` */
     public static final String REMOTE_REPOSITORIES  = "remoteRepositories";
 
     /** The path of the Maven local repository folder */

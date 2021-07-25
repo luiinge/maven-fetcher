@@ -6,6 +6,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][1],
 and this project adheres to [Semantic Versioning][2].
 
+## [1.2.0]
+**Release date:** 2021/07/24
+
+### Added
+- Method to configure a fetcher from a `Properties` object
+  (documented for version 1.1.0 but left out by mistake)
+
 ## [1.1.0]
 **Release date:** 2021/05/11
 
