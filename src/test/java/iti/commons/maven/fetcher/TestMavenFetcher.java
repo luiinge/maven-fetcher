@@ -97,6 +97,19 @@ public class TestMavenFetcher {
     }
 
 
+   @Test
+   public void attemptToFetchANonExistingArtifact() {
+       var result = new MavenFetcher()
+           .localRepositoryPath(localRepo.toString())
+           .clearRemoteRepositories()
+           .addRemoteRepository("mock", mockRepo, 0)
+           .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
+           .fetchArtifacts(
+               new MavenFetchRequest("a:b:1.0").scopes("compile")
+           );
+       Assertions.assertThat(result.allArtifacts()).isEmpty();
+   }
+
     void assertJUnit4_12IsFetched(MavenFetchResult result) {
         Assertions.assertThat(result.allArtifacts())
             .anyMatch(artifact->artifact.coordinates().equals("junit:junit:4.12"))

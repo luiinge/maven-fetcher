@@ -7,6 +7,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][1],
 and this project adheres to [Semantic Versioning][2].
 
+[1.2.2]
+-------------------------------------------------------------------------------
+**Release date:** 2022/11/28
+
+### Fixed
+- Requesting a non-existing artifact resulted in a `FetchedArtifact` pointing to
+a non-existing local file. Now such results are omitted in order to avoid confusion.
+
 [1.2.1]
 -------------------------------------------------------------------------------
 **Release date:** 2021/07/27
@@ -39,5 +47,5 @@ and this project adheres to [Semantic Versioning][2].
 - Initial release.
 
 
-[1]: <https://keepachangelog.com/en/1.0.0/>
+[1]: <https://keepachangelog.com>
 [2]: <https://semver.org>

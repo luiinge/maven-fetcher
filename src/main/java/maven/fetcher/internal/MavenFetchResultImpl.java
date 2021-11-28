@@ -4,8 +4,8 @@
 package maven.fetcher.internal;
 
 
-import java.nio.file.Path;
-import java.util.List;
+import java.nio.file.*;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,27 +31,40 @@ public class MavenFetchResultImpl implements MavenFetchResult {
         this.result = result;
         LocalRepositoryManager localRepositoryManager = session.getLocalRepositoryManager();
         Path repositoryPath = localRepositoryManager.getRepository().getBasedir().toPath();
-        this.rootArtifacts = result.getRoot().getChildren().stream()
+        this.rootArtifacts = result.getRoot()
+            .getChildren()
+            .stream()
             .map(node -> collectArtifact(node, localRepositoryManager, repositoryPath))
+            .flatMap(Optional::stream)
             .collect(Collectors.toList());
     }
 
 
-    private FetchedArtifact collectArtifact(
+    private Optional<FetchedArtifact> collectArtifact(
         DependencyNode node,
         LocalRepositoryManager localRepositoryManager,
         Path repositoryPath
     ) {
         Artifact artifact = node.getArtifact();
-        return new FetchedArtifact(
+        Path localPath = repositoryPath.resolve(
+            localRepositoryManager.getPathForLocalArtifact(artifact)
+        );
+        // the existence of the dependency node does not imply the artifact exists
+        if (!Files.exists(localPath)) {
+            return Optional.empty();
+        }
+        List<FetchedArtifact> dependencies = node.getChildren().stream()
+            .map(child -> collectArtifact(child, localRepositoryManager, repositoryPath))
+            .flatMap(Optional::stream)
+            .collect(Collectors.toList());
+
+        return Optional.of(new FetchedArtifact(
             artifact.getGroupId(),
             artifact.getArtifactId(),
             artifact.getVersion(),
-            repositoryPath.resolve(localRepositoryManager.getPathForLocalArtifact(artifact)),
-            node.getChildren().stream()
-                .map(child -> collectArtifact(child, localRepositoryManager, repositoryPath))
-                .collect(Collectors.toList())
-        );
+            localPath,
+            dependencies
+        ));
     }
 
 
