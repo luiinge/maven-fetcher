@@ -11,7 +11,7 @@ open module maven.fetcher {
     requires org.apache.maven.resolver.transport.http;
     requires org.apache.maven.resolver.util;
     requires org.apache.commons.lang3;
-    requires maven.aether.provider;
+    requires maven.resolver.provider;
     requires transitive org.slf4j;
     requires slf4jansi;
 

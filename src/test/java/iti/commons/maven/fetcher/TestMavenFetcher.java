@@ -57,6 +57,22 @@ public class TestMavenFetcher {
 
 
     @Test
+    public void fetchArtifactWithExcludedDependencies() {
+        var result = new MavenFetcher()
+            .localRepositoryPath(localRepo.toString())
+            .clearRemoteRepositories()
+            .addRemoteRepository("mock", mockRepo, 0)
+            .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
+            .fetchArtifacts(
+                new MavenFetchRequest("junit:junit:4.12")
+                    .scopes("compile")
+                    .excludingArtifacts("org.hamcrest:hamcrest-core")
+            );
+        assertJUnit4_12IsFetchedWithoutDependencies(result);
+    }
+
+
+    @Test
     public void fetchLatestVersionIfVersionNotSpecified() {
         var mockRepo = Path.of("src","test","resources","mock_maven_repo").toAbsolutePath().toUri().toString();
         var result = new MavenFetcher()
@@ -120,11 +136,25 @@ public class TestMavenFetcher {
     }
 
 
+    void assertJUnit4_12IsFetchedWithoutDependencies(MavenFetchResult result) {
+        Assertions.assertThat(result.allArtifacts())
+            .anyMatch(artifact->artifact.coordinates().equals("junit:junit:4.12"))
+            .anyMatch(artifact->artifact.path().getFileName().toString().equals("junit-4.12.jar"))
+            .anyMatch(artifact->artifact.toString().equals(junitArtifactWithoutDependenciesToString()))
+            .allMatch(artifact->artifact.path().toFile().exists())
+        ;
+    }
+
+
     private String junitArtifactToString() {
          return
          "|- junit:junit:4.12  ["+localRepo+"/junit/junit/4.12/junit-4.12.jar]\n"+
          "   |- org.hamcrest:hamcrest-core:1.3  ["+localRepo+"/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar]\n"
         ;
+    }
+
+    private String junitArtifactWithoutDependenciesToString() {
+        return "|- junit:junit:4.12  ["+localRepo+"/junit/junit/4.12/junit-4.12.jar]\n";
     }
 
 }

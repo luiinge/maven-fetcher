@@ -7,6 +7,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][1],
 and this project adheres to [Semantic Versioning][2].
 
+[1.3.0]
+-------------------------------------------------------------------------------
+**Release date:** 2022/12/01
+
+### Added
+- Feature: add exclusions to a fetch request; excluded artifacts
+will not be fetched.
+
+### Modified
+- Parameters of `MavenFetchRequest` are stored as unmodifiable copies,
+so modifying original parameter source would not affect the request.
+- Bumped version of `org.apache.maven.resolver` to `1.7.2`
+### Removed
+- Unused dependency on `maven-aether-provider`
+
 [1.2.2]
 -------------------------------------------------------------------------------
 **Release date:** 2022/11/28

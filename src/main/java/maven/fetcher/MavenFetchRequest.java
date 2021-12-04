@@ -1,11 +1,10 @@
-/**
+/*
  * @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
 package maven.fetcher;
 
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 
 /**
@@ -16,6 +15,7 @@ public class MavenFetchRequest {
     private final Collection<String> artifacts;
     private Collection<String> scopes = Arrays.asList("compile", "provided");
     private boolean retrievingOptionals = false;
+    private List<String> excludedArtifacts = List.of();
 
 
     /**
@@ -23,7 +23,7 @@ public class MavenFetchRequest {
      * @param artifacts The artifacts requested, in form of {@literal <groupId>:<artifactId>:<version>}
      */
     public MavenFetchRequest(Collection<String> artifacts) {
-        this.artifacts = artifacts;
+        this.artifacts = List.copyOf(artifacts);
     }
 
 
@@ -32,7 +32,7 @@ public class MavenFetchRequest {
      * @param artifacts The artifacts requested, in form of {@literal <groupId>:<artifactId>:<version>}
      */
     public MavenFetchRequest(String... artifacts) {
-        this.artifacts = Arrays.asList(artifacts);
+        this.artifacts = List.copyOf(Arrays.asList(artifacts));
     }
 
 
@@ -43,7 +43,19 @@ public class MavenFetchRequest {
      * @return The same instance
      */
     public MavenFetchRequest scopes(String... scopes) {
-        this.scopes = Arrays.asList(scopes);
+        this.scopes = List.copyOf(Arrays.asList(scopes));
+        return this;
+    }
+
+
+    /**
+     * Excludes one or more artifacts from the request, preventing them to be
+     * fetched.
+     * @param artifacts The artifacts to be excluded
+     * @return The same instance
+     */
+    public MavenFetchRequest excludingArtifacts(String... artifacts) {
+        this.excludedArtifacts = List.copyOf(Arrays.asList(artifacts));
         return this;
     }
 
@@ -80,4 +92,13 @@ public class MavenFetchRequest {
     public boolean isRetrievingOptionals() {
         return retrievingOptionals;
     }
+
+
+    /**
+     * @return The artifacts excluded from the request
+     */
+    public Collection<String> excludedArtifacts() {
+        return excludedArtifacts;
+    }
+
 }
