@@ -20,6 +20,11 @@ public interface MavenFetchResult {
     /** @return <tt>true</tt> if any error has ocurred during the fetching */
     boolean hasErrors();
 
+    /**
+     * @return A new stream with all the errors ocurred
+     */
+    Stream<Exception> errors();
+
 
 
 }

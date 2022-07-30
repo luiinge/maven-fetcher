@@ -18,4 +18,9 @@ public class MavenFetchException extends RuntimeException{
     public MavenFetchException(String message, Throwable e) {
         super(message, e);
     }
+
+    public MavenFetchException(String message) {
+        super(message);
+    }
+
 }

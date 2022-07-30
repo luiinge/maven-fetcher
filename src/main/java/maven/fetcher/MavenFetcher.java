@@ -4,6 +4,8 @@
 package maven.fetcher;
 
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import maven.fetcher.internal.*;
 import org.apache.maven.repository.internal.*;
 import org.eclipse.aether.*;
@@ -11,18 +13,17 @@ import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.impl.*;
 import org.eclipse.aether.impl.DefaultServiceLocator.ErrorHandler;
-import org.eclipse.aether.repository.Proxy;
-import org.eclipse.aether.repository.ProxySelector;
 import org.eclipse.aether.repository.*;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
+import org.eclipse.aether.spi.connector.checksum.ChecksumPolicyProvider;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.util.repository.*;
 import org.slf4j.*;
 import slf4jansi.AnsiLogger;
 
-import java.net.*;
+
 import java.nio.file.Path;
 import java.util.*;
 
@@ -187,10 +188,15 @@ public class MavenFetcher {
 
 
     private void addRemoteRepositories(List<String> repositories) {
-        repositories.stream()
-            .map(it -> it.split("="))
-            .map(entry -> createRemoteRepository(entry[0],entry[1]))
-            .forEach(this.remoteRepositories::add);
+        for (String repository : repositories) {
+            String[] parts = repository.split("=");
+            if (parts.length != 2) {
+                throw new IllegalArgumentException(
+                    "Wrong repository format '"+repository+"' ; expected <repo_id>=<repo_url>"
+                );
+            }
+            this.remoteRepositories.add(createRemoteRepository(parts[0],parts[1]));
+        }
     }
 
 
@@ -203,15 +209,17 @@ public class MavenFetcher {
             if (remoteRepositories.isEmpty()) {
                 throw new IllegalArgumentException("Remote repositories not specified");
             }
+            MavenTransferListener listener = new MavenTransferListener(logger);
             MavenFetchResult result = new MavenDependencyFetcher(
                 system(),
                 remoteRepositories,
-                newSession(),
+                newSession(listener),
                 request,
+                listener,
                 logger
             )
             .fetch();
-            if (!result.hasErrors()) {
+            if (result.hasErrors()) {
                 logger.warn("Some dependencies were not fetched!");
             }
             logger.info("{} artifacts resolved.", result.allArtifacts().count());
@@ -236,11 +244,11 @@ public class MavenFetcher {
 
 
 
-    private DefaultRepositorySystemSession newSession() {
+    private DefaultRepositorySystemSession newSession(MavenTransferListener listener) {
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
         session
             .setLocalRepositoryManager(system().newLocalRepositoryManager(session, localRepository));
-        session.setTransferListener(new MavenTransferLogger(logger));
+        session.setTransferListener(listener);
         proxy().ifPresent(session::setProxySelector);
         return session;
     }

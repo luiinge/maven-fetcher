@@ -4,6 +4,7 @@
 package iti.commons.maven.fetcher;
 
 
+import java.util.stream.Collectors;
 import maven.fetcher.*;
 import org.assertj.core.api.Assertions;
 import org.junit.*;
@@ -109,7 +110,7 @@ public class TestMavenFetcher {
             Properties properties = new Properties();
             properties.setProperty(MavenFetcherProperties.REMOTE_REPOSITORIES,"mock:file://repository");
             new MavenFetcher().config(properties);
-        }).hasMessage("Invalid value for property 'remoteRepositories' : Index 1 out of bounds for length 1");
+        }).hasMessage("Invalid value for property 'remoteRepositories' : Wrong repository format 'mock:file://repository' ; expected <repo_id>=<repo_url>");
     }
 
 
@@ -124,7 +125,12 @@ public class TestMavenFetcher {
                new MavenFetchRequest("a:b:1.0").scopes("compile")
            );
        Assertions.assertThat(result.allArtifacts()).isEmpty();
+       Assertions.assertThat(result.hasErrors()).isTrue();
+       Assertions.assertThat(result.errors().findAny().map(Exception::getMessage).orElseThrow())
+           .isEqualTo("Could not fetch artifact b-1.0.jar");
+
    }
+
 
     void assertJUnit4_12IsFetched(MavenFetchResult result) {
         Assertions.assertThat(result.allArtifacts())

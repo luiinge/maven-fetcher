@@ -4,7 +4,7 @@
 package maven.fetcher.internal;
 
 
-import java.util.Objects;
+import java.util.*;
 
 import org.eclipse.aether.transfer.TransferCancelledException;
 import org.eclipse.aether.transfer.TransferEvent;
@@ -13,14 +13,28 @@ import org.slf4j.Logger;
 
 
 
-public class MavenTransferLogger implements TransferListener {
+public class MavenTransferListener implements TransferListener {
 
 
     private final Logger logger;
+    private final List<String> succededTransfers = new ArrayList<>();
+    private final List<String> failedTransfers = new ArrayList<>();
 
-    public MavenTransferLogger(Logger logger) {
+
+
+    public MavenTransferListener(Logger logger) {
         Objects.requireNonNull(logger);
         this.logger = logger;
+    }
+
+
+    public List<String> succededTransfers() {
+        return List.copyOf(succededTransfers);
+    }
+
+
+    public List<String> failedTransfers() {
+        return List.copyOf(failedTransfers);
     }
 
 
@@ -59,33 +73,46 @@ public class MavenTransferLogger implements TransferListener {
 
     @Override
     public void transferSucceeded(TransferEvent event) {
-        if (event.getResource().getResourceName().endsWith(".jar") && logger.isInfoEnabled()) {
-            logger.info(
-                "{artifact} [{}] downloaded from {uri} ", 
-                resourceName(event), 
-                resourceSize(event), 
-                repository(event)
-            );
+        if (event.getResource().getResourceName().endsWith(".jar")) {
+            this.succededTransfers.add(resourceNameTrimmed(event));
+            this.failedTransfers.remove(resourceNameTrimmed(event));
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                    "{artifact} [{}] downloaded from {uri} ",
+                    resourceName(event),
+                    resourceSize(event),
+                    repository(event)
+                );
+            }
         }
     }
 
 
     @Override
     public void transferFailed(TransferEvent event) {
-        if (event.getResource().getResourceName().endsWith(".jar") && logger.isErrorEnabled()) {
-            logger.warn(
-                "Cannot download {artifact} from {uri}",
-                resourceName(event),
-                event.getResource().getRepositoryUrl()
-            );
+        if (event.getResource().getResourceName().endsWith(".jar")) {
+            this.failedTransfers.add(resourceNameTrimmed(event));
+            if (logger.isErrorEnabled()) {
+                logger.warn(
+                    "Cannot download {artifact} from {uri}",
+                    resourceName(event),
+                    event.getResource().getRepositoryUrl()
+                );
+            }
         }
     }
 
 
     private String resourceName(TransferEvent event) {
-        int index = event.getResource().getResourceName().lastIndexOf('/');
-        return String.format("%-40s",event.getResource().getResourceName().substring(index < 0 ? 0 : index + 1));
+        return String.format("%-40s",resourceNameTrimmed(event));
     }
+
+
+    private String resourceNameTrimmed(TransferEvent event) {
+        int index = event.getResource().getResourceName().lastIndexOf('/');
+        return event.getResource().getResourceName().substring(index < 0 ? 0 : index + 1);
+    }
+
 
 
     private String resourceSize(TransferEvent event) {

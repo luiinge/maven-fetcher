@@ -29,6 +29,7 @@ public class MavenDependencyFetcher implements DependencySelector {
     private final List<RemoteRepository> remoteRepositories;
     private final RepositorySystem system;
     private final Logger logger;
+    private final MavenTransferListener listener;
 
     private Set<String> retrievedArtifacts;
 
@@ -38,6 +39,7 @@ public class MavenDependencyFetcher implements DependencySelector {
         List<RemoteRepository> remoteRepositories,
         DefaultRepositorySystemSession session,
         MavenFetchRequest fetchRequest,
+        MavenTransferListener listener,
         Logger logger
     ) {
         this.system = system;
@@ -53,6 +55,7 @@ public class MavenDependencyFetcher implements DependencySelector {
             .map(artifact -> new Dependency(artifact, null, false, exclusions))
             .collect(Collectors.toList());
         this.logger = logger;
+        this.listener = listener;
     }
 
 
@@ -67,6 +70,8 @@ public class MavenDependencyFetcher implements DependencySelector {
         CollectRequest request = new CollectRequest(dependencies, dependencies, remoteRepositories);
         CollectResult result = system.collectDependencies(session, request);
         retrieveDependency(result.getRoot());
+        this.listener.failedTransfers()
+            .forEach(file -> result.addException(new MavenFetchException("Could not fetch artifact "+file)));
         return new MavenFetchResultImpl(result, session);
     }
 

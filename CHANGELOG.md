@@ -7,9 +7,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][1],
 and this project adheres to [Semantic Versioning][2].
 
+[1.4.0]
+-------------------------------------------------------------------------------
+**Release date:** 2022/07/30
+
+### Added
+- Method `MavenFetchResult.errors` returning a stream with the exceptions
+occurred during a fetch operation
+- 
+### Fixed
+- Method `MavenFetchResult.hasErrors` returned negated value
+
+### Modified
+- Now when any artifact could not be fetched, it will be registered
+as an error in the fetch result.
+
+
 [1.3.0]
 -------------------------------------------------------------------------------
-**Release date:** 2022/12/01
+**Release date:** 2021/12/01
 
 ### Added
 - Feature: add exclusions to a fetch request; excluded artifacts
@@ -24,7 +40,7 @@ so modifying original parameter source would not affect the request.
 
 [1.2.2]
 -------------------------------------------------------------------------------
-**Release date:** 2022/11/28
+**Release date:** 2021/11/28
 
 ### Fixed
 - Requesting a non-existing artifact resulted in a `FetchedArtifact` pointing to

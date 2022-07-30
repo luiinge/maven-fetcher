@@ -68,11 +68,13 @@ public class MavenFetchResultImpl implements MavenFetchResult {
     }
 
 
+    @Override
     public Stream<FetchedArtifact> artifacts() {
         return rootArtifacts.stream();
     }
 
 
+    @Override
     public Stream<FetchedArtifact> allArtifacts() {
         return Stream.concat(
             artifacts(),
@@ -81,8 +83,15 @@ public class MavenFetchResultImpl implements MavenFetchResult {
     }
 
 
+    @Override
     public boolean hasErrors() {
-        return result.getExceptions().isEmpty();
+        return !result.getExceptions().isEmpty();
+    }
+
+
+    @Override
+    public Stream<Exception> errors() {
+        return result.getExceptions().stream();
     }
 
 
