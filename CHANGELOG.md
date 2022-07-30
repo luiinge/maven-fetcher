@@ -17,6 +17,8 @@ occurred during a fetch operation
 - 
 ### Fixed
 - Method `MavenFetchResult.hasErrors` returned negated value
+- Typos in some messages
+- Already fetched artifacts do not show 'downloaded' log messages
 
 ### Modified
 - Now when any artifact could not be fetched, it will be registered

@@ -48,7 +48,7 @@ public class MavenTransferListener implements TransferListener {
     public void transferStarted(TransferEvent event) throws TransferCancelledException {
         if (event.getResource().getResourceName().endsWith(".jar") && logger.isInfoEnabled()) {
             logger.debug(
-                "Transfering {artifact} [{}] from {uri}  ...", 
+                "Transferring {artifact} [{}] from {uri}  ...",
                 resourceName(event), 
                 resourceSize(event),
                 repository(event)                     
@@ -76,7 +76,7 @@ public class MavenTransferListener implements TransferListener {
         if (event.getResource().getResourceName().endsWith(".jar")) {
             this.succededTransfers.add(resourceNameTrimmed(event));
             this.failedTransfers.remove(resourceNameTrimmed(event));
-            if (logger.isInfoEnabled()) {
+            if (logger.isInfoEnabled() && event.getResource().getContentLength() > 0 ) {
                 logger.info(
                     "{artifact} [{}] downloaded from {uri} ",
                     resourceName(event),
