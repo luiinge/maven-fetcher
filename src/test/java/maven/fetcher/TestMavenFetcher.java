@@ -1,10 +1,9 @@
 /*
   @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
-package iti.commons.maven.fetcher;
+package maven.fetcher;
 
 
-import maven.fetcher.*;
 import org.assertj.core.api.Assertions;
 import org.junit.*;
 import org.slf4j.*;
@@ -47,7 +46,7 @@ public class TestMavenFetcher {
         var result = new MavenFetcher()
             .localRepositoryPath(localRepo.toString())
             .clearRemoteRepositories()
-            .addRemoteRepository("mock", mockRepo, 0)
+            .addRemoteRepository(new Repository("mock", mockRepo).priority(0))
             .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
             .fetchArtifacts(
                 new MavenFetchRequest("junit:junit:4.12").scopes("compile")
@@ -61,7 +60,7 @@ public class TestMavenFetcher {
         var result = new MavenFetcher()
             .localRepositoryPath(localRepo.toString())
             .clearRemoteRepositories()
-            .addRemoteRepository("mock", mockRepo, 0)
+            .addRemoteRepository(new Repository("mock", mockRepo).priority(0))
             .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
             .fetchArtifacts(
                 new MavenFetchRequest("junit:junit:4.12")
@@ -78,7 +77,7 @@ public class TestMavenFetcher {
         var result = new MavenFetcher()
             .localRepositoryPath(localRepo.toString())
             .clearRemoteRepositories()
-            .addRemoteRepository("mock", mockRepo, 0)
+            .addRemoteRepository(new Repository("mock", mockRepo).priority(0))
             .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
             .fetchArtifacts(
                 new MavenFetchRequest("junit:junit").scopes("compile")
@@ -131,7 +130,8 @@ public class TestMavenFetcher {
             Properties properties = new Properties();
             properties.setProperty(MavenFetcherProperties.REMOTE_REPOSITORIES,"mock:file://repository");
             new MavenFetcher().config(properties);
-        }).hasMessage("Invalid value for property 'remoteRepositories' : Wrong repository format 'mock:file://repository' ; expected <repo_id>=<repo_url>");
+        }).hasMessage("Invalid value for property 'remoteRepositories' : Invalid repository value 'mock:file://repository' .\n"+
+            "Expected formats are 'id=url' and 'id=url [user:pwd]'");
     }
 
 
@@ -140,7 +140,7 @@ public class TestMavenFetcher {
        var result = new MavenFetcher()
            .localRepositoryPath(localRepo.toString())
            .clearRemoteRepositories()
-           .addRemoteRepository("mock", mockRepo, 0)
+           .addRemoteRepository(new Repository("mock", mockRepo).priority(0))
            .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
            .fetchArtifacts(
                new MavenFetchRequest("a:b:1.0").scopes("compile")

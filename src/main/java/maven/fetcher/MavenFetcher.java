@@ -6,6 +6,7 @@ package maven.fetcher;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.regex.*;
 import java.util.stream.Collectors;
 import maven.fetcher.internal.*;
 import org.apache.maven.repository.internal.*;
@@ -36,6 +37,12 @@ import static maven.fetcher.MavenFetcherProperties.*;
  * <em>This class is mutable and not thread-safe.</em>
  */
 public class MavenFetcher {
+
+    private static final Pattern REPO_EXPRESSION_WITH_PASSWORD =
+        Pattern.compile("(\\w+)=([^\\s]+)\\s+\\[(\\w+):(\\w+)]");
+    private static final Pattern REPO_EXPRESSION =
+        Pattern.compile("(\\w+)=([^\\s]+)");
+
 
     static {
         AnsiLogger.addStyle("repository", "yellow,bold");
@@ -133,19 +140,26 @@ public class MavenFetcher {
     /**
      * Add a remote repository
      */
-    public MavenFetcher addRemoteRepository(String id, String url) {
-        this.remoteRepositories.add(createRemoteRepository(id, url));
+    public MavenFetcher addRemoteRepository(Repository repository) {
+        if (repository.priority() > -1) {
+            this.remoteRepositories.add(repository.priority(),parseRemoteRepository(repository.toString()));
+        } else {
+            this.remoteRepositories.add(parseRemoteRepository(repository.toString()));
+        }
         return this;
     }
 
 
     /**
-     * Add a remote repository with the given priority (being 0 the highest)
+     * Add a remote repository
      */
-    public MavenFetcher addRemoteRepository(String id, String url, int priority) {
-        this.remoteRepositories.add(priority,createRemoteRepository(id, url));
-        return this;
+    public MavenFetcher addRemoteRepository(String id, String url) {
+        return addRemoteRepository(new Repository(id,url));
     }
+
+
+
+
 
 
     /**
@@ -202,13 +216,7 @@ public class MavenFetcher {
 
     private void addRemoteRepositories(List<String> repositories) {
         for (String repository : repositories) {
-            String[] parts = repository.split("=");
-            if (parts.length != 2) {
-                throw new IllegalArgumentException(
-                    "Wrong repository format '"+repository+"' ; expected <repo_id>=<repo_url>"
-                );
-            }
-            this.remoteRepositories.add(createRemoteRepository(parts[0],parts[1]));
+            this.remoteRepositories.add(parseRemoteRepository(repository));
         }
     }
 
@@ -281,8 +289,10 @@ public class MavenFetcher {
         int port = url.getPort() < 0 ? 8080 : url.getPort();
         Authentication authentication = null;
         if (proxyUsername != null) {
-            authentication = new AuthenticationBuilder().addUsername(proxyUsername)
-                .addPassword(proxyPassword).build();
+            authentication = new AuthenticationBuilder()
+                .addUsername(proxyUsername)
+                .addPassword(proxyPassword)
+                .build();
         }
         var proxy = new Proxy(url.getProtocol(), url.getHost(), port, authentication);
         return Optional.of(
@@ -312,6 +322,47 @@ public class MavenFetcher {
     private static RemoteRepository createRemoteRepository(String id, String url) {
         return new RemoteRepository.Builder(id, "default", url).build();
     }
+
+
+
+    private static RemoteRepository createRemoteRepository(
+        String id,
+        String url,
+        String user,
+        String password
+    ) {
+        return new RemoteRepository.Builder(id, "default", url)
+            .setAuthentication(new AuthenticationBuilder().addUsername(user).addPassword(password).build())
+            .build();
+    }
+
+
+    private static RemoteRepository parseRemoteRepository (String value) {
+        // id=url [user:password]
+        Matcher valueWithPassword = REPO_EXPRESSION_WITH_PASSWORD.matcher(value);
+        if (valueWithPassword.matches()) {
+            return createRemoteRepository(
+                valueWithPassword.group(1),
+                valueWithPassword.group(2),
+                valueWithPassword.group(3),
+                valueWithPassword.group(4)
+            );
+        }
+
+        // id=url
+        Matcher valueWithoutPassword = REPO_EXPRESSION.matcher(value);
+        if (valueWithoutPassword.matches()) {
+            return createRemoteRepository(
+                valueWithoutPassword.group(1),
+                valueWithoutPassword.group(2)
+            );
+        }
+        // invalid
+        throw new IllegalArgumentException("Invalid repository value '"+value+"' .\n"+
+            "Expected formats are 'id=url' and 'id=url [user:pwd]'"
+        );
+    }
+
 
 
     private static void checkNonNull(Object... objects) {

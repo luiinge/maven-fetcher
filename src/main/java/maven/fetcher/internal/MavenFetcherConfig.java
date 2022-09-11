@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import maven.fetcher.MavenFetcher;
+import maven.fetcher.Repository;
 
 
 public class MavenFetcherConfig {
@@ -47,7 +48,7 @@ public class MavenFetcherConfig {
         String remoteRepositories = properties.getProperty(REMOTE_REPOSITORIES);
         if (remoteRepositories != null) {
             for (String remoteRepository : remoteRepositories.split(";")) {
-                fetcher.addRemoteRepository(remoteRepository, remoteRepository);
+                fetcher.addRemoteRepository(new Repository(remoteRepository, remoteRepository));
             }
         }
         String localRepository = properties.getProperty(LOCAL_REPOSITORY);
