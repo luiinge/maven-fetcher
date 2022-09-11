@@ -4,7 +4,6 @@
 package iti.commons.maven.fetcher;
 
 
-import java.util.stream.Collectors;
 import maven.fetcher.*;
 import org.assertj.core.api.Assertions;
 import org.junit.*;
@@ -102,6 +101,28 @@ public class TestMavenFetcher {
             );
         assertJUnit4_12IsFetched(result);
     }
+
+
+    @Test
+    public void doNotUserDefaultRemoteRepository() {
+        Properties withoutDefaultRepo = new Properties();
+        withoutDefaultRepo.setProperty(MavenFetcherProperties.USE_DEFAULT_REMOTE_REPOSITORY,"false");
+        var fetcher1 = new MavenFetcher().config(withoutDefaultRepo);
+        Assertions.assertThat(fetcher1.remoteRepositories()).isEmpty();
+
+        Properties withDefaultRepo = new Properties();
+        withoutDefaultRepo.setProperty(MavenFetcherProperties.USE_DEFAULT_REMOTE_REPOSITORY,"true");
+        var fetcher2 = new MavenFetcher().config(withDefaultRepo);
+        Assertions.assertThat(fetcher2.remoteRepositories()).containsExactly(
+            "maven-central (https://repo.maven.apache.org/maven2, default, releases+snapshots)"
+        );
+
+        var fetcher3 = new MavenFetcher();
+        Assertions.assertThat(fetcher3.remoteRepositories()).containsExactly(
+            "maven-central (https://repo.maven.apache.org/maven2, default, releases+snapshots)"
+        );
+    }
+
 
 
     @Test
