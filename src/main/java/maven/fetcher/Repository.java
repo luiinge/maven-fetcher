@@ -8,7 +8,7 @@ public class Repository {
     private final String url;
     private String username;
     private String password;
-    private int priority;
+    private int priority = -1;
 
 
     public Repository(String id, String url) {
@@ -30,16 +30,6 @@ public class Repository {
     }
 
 
-    public String username() {
-        return username;
-    }
-
-
-    public String password() {
-        return password;
-    }
-
-
     public int priority() {
         return priority;
     }
@@ -54,9 +44,5 @@ public class Repository {
         }
     }
 
-
-    public boolean isAuthenticated() {
-        return username != null;
-    }
 
 }

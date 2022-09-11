@@ -102,6 +102,27 @@ public class TestMavenFetcher {
     }
 
 
+    @Test
+    public void doNotUserDefaultRemoteRepository() {
+        Properties withoutDefaultRepo = new Properties();
+        withoutDefaultRepo.setProperty(MavenFetcherProperties.USE_DEFAULT_REMOTE_REPOSITORY,"false");
+        var fetcher1 = new MavenFetcher().config(withoutDefaultRepo);
+        Assertions.assertThat(fetcher1.remoteRepositories()).isEmpty();
+
+        Properties withDefaultRepo = new Properties();
+        withoutDefaultRepo.setProperty(MavenFetcherProperties.USE_DEFAULT_REMOTE_REPOSITORY,"true");
+        var fetcher2 = new MavenFetcher().config(withDefaultRepo);
+        Assertions.assertThat(fetcher2.remoteRepositories()).containsExactly(
+            "maven-central (https://repo.maven.apache.org/maven2, default, releases+snapshots)"
+        );
+
+        var fetcher3 = new MavenFetcher();
+        Assertions.assertThat(fetcher3.remoteRepositories()).containsExactly(
+            "maven-central (https://repo.maven.apache.org/maven2, default, releases+snapshots)"
+        );
+    }
+
+
 
     @Test
     public void malformedPropertiesThrowError() {
