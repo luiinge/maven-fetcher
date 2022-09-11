@@ -6,6 +6,7 @@ package maven.fetcher;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.stream.Collectors;
 import maven.fetcher.internal.*;
 import org.apache.maven.repository.internal.*;
 import org.eclipse.aether.*;
@@ -16,7 +17,6 @@ import org.eclipse.aether.impl.DefaultServiceLocator.ErrorHandler;
 import org.eclipse.aether.repository.*;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
-import org.eclipse.aether.spi.connector.checksum.ChecksumPolicyProvider;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.eclipse.aether.util.repository.*;
@@ -149,11 +149,21 @@ public class MavenFetcher {
 
 
     /**
+     * @return A list with the string representation of the configured remote repositories
+     */
+    public List<String> remoteRepositories() {
+        return this.remoteRepositories.stream()
+            .map(RemoteRepository::toString)
+            .collect(Collectors.toList());
+    }
+
+
+    /**
      * Configure the fetcher according a set of properties
      * @see MavenFetcherProperties
      */
     public MavenFetcher config(Properties properties) {
-        if ("true".equalsIgnoreCase(properties.getProperty(USE_DEFAULT_REMOTE_REPOSITORY, "false"))) {
+        if ("false".equalsIgnoreCase(properties.getProperty(USE_DEFAULT_REMOTE_REPOSITORY, "true"))) {
             clearRemoteRepositories();
         }
         for (Object property : properties.keySet()) {
@@ -178,6 +188,9 @@ public class MavenFetcher {
                     case PROXY_URL:
                         checkURL(value);
                         this.proxyURL = value;
+                        break;
+                    default:
+                        logger.warn("Property {} is not recognized and would be ignored",property);
                 }
             } catch (Exception e) {
                 throw new MavenFetchException("Invalid value for property '"+property+"' : "+e.getMessage(), e);
@@ -319,6 +332,7 @@ public class MavenFetcher {
     private static void checkURL(String url) throws MalformedURLException {
         new URL(url);
     }
+
 
 
 
