@@ -7,6 +7,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][1],
 and this project adheres to [Semantic Versioning][2].
 
+
+[1.5.0]
+-------------------------------------------------------------------------------
+**Release date:** 2022/09/11
+
+### Added
+- Capability of passing credentials to remote repositories
+
+### Fixed
+- Property `useDefaultRemoteRepository` was inverted (https://github.com/luiinge/maven-fetcher/issues/13)
+
+
 [1.4.0]
 -------------------------------------------------------------------------------
 **Release date:** 2022/07/30
@@ -14,7 +26,7 @@ and this project adheres to [Semantic Versioning][2].
 ### Added
 - Method `MavenFetchResult.errors` returning a stream with the exceptions
 occurred during a fetch operation
-- 
+
 ### Fixed
 - Method `MavenFetchResult.hasErrors` returned negated value
 - Typos in some messages
