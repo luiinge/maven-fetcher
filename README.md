@@ -105,15 +105,15 @@ Another way to configure the fetcher is load either a `Properties` object or an 
 
 The accepted properties are the following:
 
-| Property                     | Description                                                                  |
-| ---------------------------- | ---------------------------------------------------------------------------- |
-| `useDefaultRemoteRepository` | Whether use the default Maven Central repository (`true` by default)         |
-| `remoteRepositories`         | A list of remote repositories in form of `=` and separated with `;`          |
-| `localRepository`            | The path of the Maven local repository folder                                |
-| `proxy.url`                  | A proxy URL, if required                                                     |
-| `proxy.username`             | The username for proxy credentials                                           |
-| `proxy.password`             | The password for proxy credentials                                           |
-| `proxy.exceptions`           | A list of proxy exceptions separated with `;`                                |
+| Property                     | Description                                                                                                                                                              |
+|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `useDefaultRemoteRepository` | Whether use the default Maven Central repository (`true` by default)                                                                                                     |
+| `remoteRepositories`         | A list of remote repositories separeted with `;` .<br/> The expected format for each repository is either `id=url` or `id=url [user:pwd]` (when credentials are needed). |
+| `localRepository`            | The path of the Maven local repository folder                                                                                                                            |
+| `proxy.url`                  | A proxy URL, if required                                                                                                                                                 |
+| `proxy.username`             | The username for proxy credentials                                                                                                                                       |
+| `proxy.password`             | The password for proxy credentials                                                                                                                                       |
+| `proxy.exceptions`           | A list of proxy exceptions separated with `;`                                                                                                                            |
 
 
 Other considerations

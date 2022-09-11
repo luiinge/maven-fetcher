@@ -63,7 +63,11 @@ public class MavenDependencyFetcher implements DependencySelector {
         if (logger.isInfoEnabled()) {
             logger.info("Using the following repositories:");
             for (var remoteRepository : remoteRepositories) {
-                logger.info("- {repository} [{uri}]", remoteRepository.getId(), remoteRepository.getUrl());
+                if (remoteRepository.getAuthentication() == null) {
+                    logger.info("- {repository} [{uri}]", remoteRepository.getId(), remoteRepository.getUrl());
+                } else {
+                    logger.info("- {repository} [{uri}] (authenticated)", remoteRepository.getId(), remoteRepository.getUrl());
+                }
             }
         }
         this.retrievedArtifacts = new HashSet<>();
