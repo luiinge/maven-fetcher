@@ -125,6 +125,20 @@ public class TestMavenFetcher {
 
 
     @Test
+    public void repositoryFormats() {
+        Assertions.assertThat(new MavenFetcher().config(properties(
+            MavenFetcherProperties.REMOTE_REPOSITORIES,
+                "maven-central=https://repo1.maven.org/maven2"
+        ))).isNotNull();
+        Assertions.assertThat(new MavenFetcher().config(properties(
+                MavenFetcherProperties.REMOTE_REPOSITORIES,
+                "maven-central=https://repo1.maven.org/maven2 [user123_@domain:mypass#123@!.]])]"
+        ))).isNotNull();
+    }
+
+
+
+    @Test
     public void malformedPropertiesThrowError() {
         Assertions.assertThatCode(() -> {
             Properties properties = new Properties();
@@ -182,6 +196,15 @@ public class TestMavenFetcher {
 
     private String junitArtifactWithoutDependenciesToString() {
         return "|- junit:junit:4.12  ["+localRepo+"/junit/junit/4.12/junit-4.12.jar]\n";
+    }
+
+
+    private Properties properties(String... pairs) {
+        Properties properties = new Properties();
+        for (int i = 0; i < pairs.length-1; i+=2) {
+            properties.setProperty(pairs[i],pairs[i+1]);
+        }
+        return properties;
     }
 
 }

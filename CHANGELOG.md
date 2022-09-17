@@ -7,6 +7,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][1],
 and this project adheres to [Semantic Versioning][2].
 
+[1.5.1]
+-------------------------------------------------------------------------------
+**Release date:** 2022/09/17
+
+### Fixed
+- Issue when parsing repositories with non-alphabetical symbols
+
 
 [1.5.0]
 -------------------------------------------------------------------------------

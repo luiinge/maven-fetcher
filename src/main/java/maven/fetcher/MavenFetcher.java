@@ -39,9 +39,9 @@ import static maven.fetcher.MavenFetcherProperties.*;
 public class MavenFetcher {
 
     private static final Pattern REPO_EXPRESSION_WITH_PASSWORD =
-        Pattern.compile("(\\w+)=([^\\s]+)\\s+\\[(\\w+):(\\w+)]");
+        Pattern.compile("(.+)=(.+)\\s+\\[(.+):(.+)]$");
     private static final Pattern REPO_EXPRESSION =
-        Pattern.compile("(\\w+)=([^\\s]+)");
+        Pattern.compile("(.+)=(.+)$");
 
 
     static {
