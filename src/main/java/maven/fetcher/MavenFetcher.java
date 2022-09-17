@@ -38,10 +38,6 @@ import static maven.fetcher.MavenFetcherProperties.*;
  */
 public class MavenFetcher {
 
-    private static final Pattern REPO_EXPRESSION_WITH_PASSWORD =
-        Pattern.compile("(.+)=(.+)\\s+\\[(.+):(.+)]$");
-    private static final Pattern REPO_EXPRESSION =
-        Pattern.compile("(.+)=(.+)$");
 
 
     static {
@@ -320,6 +316,8 @@ public class MavenFetcher {
 
 
     private static RemoteRepository createRemoteRepository(String id, String url) {
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(url);
         return new RemoteRepository.Builder(id, "default", url).build();
     }
 
@@ -338,31 +336,38 @@ public class MavenFetcher {
 
 
     private static RemoteRepository parseRemoteRepository (String value) {
+        // id=url
         // id=url [user:password]
-        Matcher valueWithPassword = REPO_EXPRESSION_WITH_PASSWORD.matcher(value);
-        if (valueWithPassword.matches()) {
-            return createRemoteRepository(
-                valueWithPassword.group(1),
-                valueWithPassword.group(2),
-                valueWithPassword.group(3),
-                valueWithPassword.group(4)
-            );
+        String expression = value.strip().replaceAll("\\s+"," ");
+        String[] parts = expression.split("=",2);
+        if (parts.length != 2) throwInvalidRepositoryValue(value);
+        String id = parts[0];
+        expression = parts[1];
+
+        parts = expression.split(" ",2);
+        String url = parts[0];
+        if (parts.length == 1) {
+            return createRemoteRepository(id,url);
         }
 
-        // id=url
-        Matcher valueWithoutPassword = REPO_EXPRESSION.matcher(value);
-        if (valueWithoutPassword.matches()) {
-            return createRemoteRepository(
-                valueWithoutPassword.group(1),
-                valueWithoutPassword.group(2)
-            );
-        }
-        // invalid
-        throw new IllegalArgumentException("Invalid repository value '"+value+"' .\n"+
+        int start = parts[1].indexOf("[");
+        int end = parts[1].lastIndexOf("]");
+        if (start == -1 || end == -1) throwInvalidRepositoryValue(value);
+
+        expression = parts[1].substring(start+1,end);
+
+        parts = expression.split(":",2);
+        if (parts.length != 2) throwInvalidRepositoryValue(value);
+
+        return createRemoteRepository(id,url,parts[0],parts[1]);
+
+    }
+
+    private static void throwInvalidRepositoryValue(String value) {
+        throw new IllegalArgumentException("Invalid repository value '"+ value +"' .\n"+
             "Expected formats are 'id=url' and 'id=url [user:pwd]'"
         );
     }
-
 
 
     private static void checkNonNull(Object... objects) {
@@ -383,7 +388,6 @@ public class MavenFetcher {
     private static void checkURL(String url) throws MalformedURLException {
         new URL(url);
     }
-
 
 
 
