@@ -6,22 +6,26 @@ package maven.fetcher;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.regex.*;
 import java.util.stream.Collectors;
 import maven.fetcher.internal.*;
-import org.apache.maven.repository.internal.*;
-import org.eclipse.aether.*;
+import org.apache.maven.repository.internal.DefaultVersionResolver;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
-import org.eclipse.aether.impl.*;
-import org.eclipse.aether.impl.DefaultServiceLocator.ErrorHandler;
+import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.impl.VersionResolver;
 import org.eclipse.aether.repository.*;
+import org.eclipse.aether.resolution.ArtifactDescriptorException;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.transport.TransporterFactory;
 import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
-import org.eclipse.aether.util.repository.*;
-import org.slf4j.*;
+import org.eclipse.aether.util.repository.AuthenticationBuilder;
+import org.eclipse.aether.util.repository.DefaultProxySelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import slf4jansi.AnsiLogger;
 
 
@@ -227,7 +231,7 @@ public class MavenFetcher {
                 throw new IllegalArgumentException("Remote repositories not specified");
             }
             MavenTransferListener listener = new MavenTransferListener(logger);
-            MavenFetchResult result = new MavenDependencyFetcher(
+            MavenFetchResult result = new MavenArtifactFetcher(
                 system(),
                 remoteRepositories,
                 newSession(listener),
@@ -241,7 +245,7 @@ public class MavenFetcher {
             }
             logger.info("{} artifacts resolved.", result.allArtifacts().count());
             return result;
-        } catch (DependencyCollectionException e) {
+        } catch (DependencyCollectionException | ArtifactDescriptorException e) {
             throw new MavenFetchException(e);
         }
     }
@@ -290,7 +294,7 @@ public class MavenFetcher {
                 .addPassword(proxyPassword)
                 .build();
         }
-        var proxy = new Proxy(url.getProtocol(), url.getHost(), port, authentication);
+        var proxy =  new Proxy(url.getProtocol(), url.getHost(), port, authentication);
         return Optional.of(
             new DefaultProxySelector()
                 .add(proxy, proxyExceptions == null ? "" : String.join("|", proxyExceptions))
@@ -298,9 +302,8 @@ public class MavenFetcher {
     }
 
 
-
     private RepositorySystem newRepositorySystem(DefaultServiceLocator locator) {
-        locator.setErrorHandler(new ErrorHandler() {
+        locator.setErrorHandler(new DefaultServiceLocator.ErrorHandler() {
             @Override
             public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
                 logger.error("Cannot create instance of {} for service {}",impl,type,exception);

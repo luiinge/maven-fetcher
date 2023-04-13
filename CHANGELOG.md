@@ -7,6 +7,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog][1],
 and this project adheres to [Semantic Versioning][2].
 
+[1.6.0]
+-------------------------------------------------------------------------------
+**Release date:** 2023/04/13
+
+### Modified
+- Updated and fixed dependencies
+
+
 [1.5.1]
 -------------------------------------------------------------------------------
 **Release date:** 2022/09/17

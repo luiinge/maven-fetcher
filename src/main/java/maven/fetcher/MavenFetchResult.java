@@ -25,6 +25,4 @@ public interface MavenFetchResult {
      */
     Stream<Exception> errors();
 
-
-
 }

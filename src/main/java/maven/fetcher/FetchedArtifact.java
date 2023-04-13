@@ -5,6 +5,8 @@ package maven.fetcher;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
+import java.util.StringTokenizer;
 import java.util.stream.Stream;
 
 /**
@@ -35,6 +37,10 @@ public class FetchedArtifact {
         this.dependencies = dependencies;
     }
 
+
+    public FetchedArtifact(String coordinates, FetchedArtifact... dependencies) {
+        this(coordinates.split(":")[0],coordinates.split(":")[1],coordinates.split(":")[2],null,List.of(dependencies));
+    }
 
     /**
      * The group id
@@ -118,4 +124,17 @@ public class FetchedArtifact {
         return string;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FetchedArtifact that = (FetchedArtifact) o;
+        return Objects.equals(groupId, that.groupId) && Objects.equals(artifactId, that.artifactId) && Objects.equals(version, that.version) && Objects.equals(dependencies, that.dependencies);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupId, artifactId, version, dependencies);
+    }
 }

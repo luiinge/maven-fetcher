@@ -5,12 +5,15 @@
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">
-            <PatternLayout pattern="%m%n"/>
+            <PatternLayout pattern="%p %l %m%n"/>
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="debug">
+        <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>
+        <Logger name="org.apache.http" level="warn">
+            <AppenderRef ref="Console"/>
+        </Logger>
     </Loggers>
 </Configuration>

@@ -7,24 +7,31 @@ package maven.fetcher.internal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.eclipse.aether.*;
-import org.eclipse.aether.artifact.*;
+
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.*;
-import org.eclipse.aether.graph.*;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.*;
 import org.eclipse.aether.transfer.ArtifactNotFoundException;
+import org.eclipse.aether.util.graph.selector.AndDependencySelector;
 import org.slf4j.Logger;
 
 import maven.fetcher.*;
 
 
-public class MavenDependencyFetcher implements DependencySelector {
+
+public class MavenArtifactFetcher implements DependencySelector {
 
     private final DefaultRepositorySystemSession session;
     private final Collection<String> scopes;
     private final boolean retrieveOptionals;
-    private final List<Dependency> dependencies;
+    private final List<Artifact> artifacts;
     private final List<Exclusion> exclusions;
     private final List<RemoteRepository> remoteRepositories;
     private final RepositorySystem system;
@@ -34,7 +41,7 @@ public class MavenDependencyFetcher implements DependencySelector {
     private Set<String> retrievedArtifacts;
 
 
-    public MavenDependencyFetcher(
+    public MavenArtifactFetcher(
         RepositorySystem system,
         List<RemoteRepository> remoteRepositories,
         DefaultRepositorySystemSession session,
@@ -50,16 +57,15 @@ public class MavenDependencyFetcher implements DependencySelector {
         this.exclusions = fetchRequest.excludedArtifacts().stream()
             .map(this::exclusionFromCoordinates)
             .collect(Collectors.toList());
-        this.dependencies = fetchRequest.artifacts().stream()
+        this.artifacts = fetchRequest.artifacts().stream()
             .map(this::artifactFromCoordinates)                        
-            .map(artifact -> new Dependency(artifact, null, false, exclusions))
             .collect(Collectors.toList());
         this.logger = logger;
         this.listener = listener;
     }
 
 
-    public MavenFetchResult fetch() throws DependencyCollectionException {
+    public MavenFetchResult fetch() throws DependencyCollectionException, ArtifactDescriptorException {
         if (logger.isInfoEnabled()) {
             logger.info("Using the following repositories:");
             for (var remoteRepository : remoteRepositories) {
@@ -71,12 +77,35 @@ public class MavenDependencyFetcher implements DependencySelector {
             }
         }
         this.retrievedArtifacts = new HashSet<>();
-        CollectRequest request = new CollectRequest(dependencies, dependencies, remoteRepositories);
+        List<CollectResult> results = new ArrayList<>();
+        for (var artifact : artifacts) {
+            results.add(collectResult(artifact));
+        }
+        return new MavenFetchResultImpl(results, session);
+    }
+
+
+
+    private CollectResult collectResult(Artifact artifact)
+    throws ArtifactDescriptorException,
+    DependencyCollectionException
+    {
+        ArtifactDescriptorRequest descriptorRequest = new ArtifactDescriptorRequest();
+        descriptorRequest.setArtifact(artifact);
+        descriptorRequest.setRepositories(remoteRepositories);
+        ArtifactDescriptorResult descriptorResult = system.readArtifactDescriptor(session, descriptorRequest);
+
+        CollectRequest request = new CollectRequest();
+        request.setRootArtifact(descriptorResult.getArtifact());
+        request.setDependencies(descriptorResult.getDependencies());
+        request.setManagedDependencies(descriptorResult.getManagedDependencies());
+        request.setRepositories(remoteRepositories);
+
         CollectResult result = system.collectDependencies(session, request);
         retrieveDependency(result.getRoot());
         this.listener.failedTransfers()
             .forEach(file -> result.addException(new MavenFetchException("Could not fetch artifact "+file)));
-        return new MavenFetchResultImpl(result, session);
+        return result;
     }
 
 

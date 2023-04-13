@@ -8,35 +8,30 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import maven.fetcher.FetchedArtifact;
+import maven.fetcher.MavenFetchResult;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.collection.CollectResult;
 import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.repository.LocalRepositoryManager;
 
-import maven.fetcher.FetchedArtifact;
-import maven.fetcher.MavenFetchResult;
-
-
 
 public class MavenFetchResultImpl implements MavenFetchResult {
 
-
-    private final CollectResult result;
+    private final List<CollectResult> results;
     private final List<FetchedArtifact> rootArtifacts;
 
 
-    MavenFetchResultImpl(CollectResult result, DefaultRepositorySystemSession session) {
-        this.result = result;
+    MavenFetchResultImpl(List<CollectResult> results, DefaultRepositorySystemSession session) {
+        this.results = results;
         LocalRepositoryManager localRepositoryManager = session.getLocalRepositoryManager();
         Path repositoryPath = localRepositoryManager.getRepository().getBasedir().toPath();
-        this.rootArtifacts = result.getRoot()
-            .getChildren()
-            .stream()
-            .map(node -> collectArtifact(node, localRepositoryManager, repositoryPath))
-            .flatMap(Optional::stream)
-            .collect(Collectors.toList());
+        this.rootArtifacts = results.stream()
+                .map(CollectResult::getRoot)
+                .map(root -> collectArtifact(root, localRepositoryManager, repositoryPath))
+                .flatMap(Optional::stream)
+                .collect(Collectors.toList());
     }
 
 
@@ -77,27 +72,28 @@ public class MavenFetchResultImpl implements MavenFetchResult {
     @Override
     public Stream<FetchedArtifact> allArtifacts() {
         return Stream.concat(
-            artifacts(),
-            artifacts().flatMap(FetchedArtifact::allDepedencies)
+            rootArtifacts.stream(),
+            rootArtifacts.stream().flatMap(FetchedArtifact::allDepedencies)
         );
     }
 
 
     @Override
     public boolean hasErrors() {
-        return !result.getExceptions().isEmpty();
+        return results.stream().anyMatch(it -> !it.getExceptions().isEmpty());
     }
 
 
     @Override
     public Stream<Exception> errors() {
-        return result.getExceptions().stream();
+        return results.stream().flatMap(it -> it.getExceptions().stream());
     }
 
 
     @Override
     public String toString() {
-        return artifacts().map(FetchedArtifact::toString).collect(Collectors.joining("\n"));
+        return artifacts().map(FetchedArtifact::toString).collect(Collectors.joining());
     }
+
 
 }
