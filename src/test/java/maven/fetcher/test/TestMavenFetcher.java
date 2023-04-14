@@ -1,9 +1,10 @@
 /*
   @author Luis Iñesta Gelabert -  luiinge@gmail.com
  */
-package maven.fetcher;
+package maven.fetcher.test;
 
 
+import maven.fetcher.*;
 import org.assertj.core.api.Assertions;
 import org.junit.*;
 import org.slf4j.*;
