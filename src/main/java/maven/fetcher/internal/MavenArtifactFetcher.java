@@ -19,7 +19,6 @@ import org.eclipse.aether.graph.Exclusion;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.*;
 import org.eclipse.aether.transfer.ArtifactNotFoundException;
-import org.eclipse.aether.util.graph.selector.AndDependencySelector;
 import org.slf4j.Logger;
 
 import maven.fetcher.*;

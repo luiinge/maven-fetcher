@@ -25,17 +25,17 @@ public class TestMavenFetcher {
         .toString();
 
     private Path localRepo;
-        
+
     @Before
     public void prepareLocalRepo() throws IOException {
         localRepo = Files.createTempDirectory("test");
     }
 
-    @After 
+    @After
     public void cleanLocalRepo() throws IOException {
         Files.walkFileTree(localRepo, new SimpleFileVisitor<>() {
             @Override
-            public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) 
+            public FileVisitResult visitFile(Path path, BasicFileAttributes attrs)
             throws IOException {
                 Files.delete(path);
                 return FileVisitResult.CONTINUE;
@@ -43,7 +43,7 @@ public class TestMavenFetcher {
         });
     }
 
-    
+
     @Test
     public void fetchArtifactWithDependencies() {
         var result = new MavenFetcher()
@@ -95,6 +95,18 @@ public class TestMavenFetcher {
             .anyMatch(it -> it.groupId().equals("org.apache.maven") && it.artifactId().equals("maven-artifact"));
     }
 
+
+    @Test
+    public void fetchArtifactWithRequiredProfile() {
+        var result = new MavenFetcher()
+                .localRepositoryPath(localRepo.toString())
+                .logger(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME))
+                .fetchArtifacts(
+                        new MavenFetchRequest("com.google.guava:guava:33.1.0-jre").scopes("compile")
+                );
+        System.out.println(result);
+        assertThat(result.allArtifacts()).size().isGreaterThan(1);
+    }
 
 
 

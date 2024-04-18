@@ -270,6 +270,7 @@ public class MavenFetcher {
         session
             .setLocalRepositoryManager(system().newLocalRepositoryManager(session, localRepository));
         session.setTransferListener(listener);
+        session.setSystemProperties(System.getProperties());
         proxy().ifPresent(session::setProxySelector);
         return session;
     }
