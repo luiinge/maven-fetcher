@@ -1,6 +1,9 @@
 Maven Fetcher
 ================================================================================
 
+> [!Important]
+> This project has been moved to https://github.com/org-myjtools/maven-fetcher 
+
 ![GitHub](https://img.shields.io/github/license/luiinge/maven-fetcher?style=plastic)
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/luiinge/maven-fetcher/quality%20check/master?style=plastic)
 ![Maven Central](https://img.shields.io/maven-central/v/io.github.luiinge/maven-fetcher?style=plastic)
